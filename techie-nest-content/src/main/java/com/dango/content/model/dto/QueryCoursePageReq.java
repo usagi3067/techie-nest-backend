@@ -19,14 +19,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class QueryCoursePageReq implements Serializable {
     private static final long serialVersionUID = -3042686055658047285L;
+    @ApiModelProperty("课程名称")
+    private String courseName;
+
     @ApiModelProperty("审核状态")
     private String auditStatus;
 
     @ApiModelProperty("发布状态")
     private String publishStatus;
-
-    @ApiModelProperty("课程名称")
-    private String courseName;
-
 
 }

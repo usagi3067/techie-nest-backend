@@ -1,9 +1,15 @@
 package com.dango.content.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.mapper.CourseBaseMapper;
+import com.dango.content.model.dto.QueryCoursePageReq;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
+import com.dango.model.PageParams;
+import com.dango.model.PageResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +21,31 @@ import org.springframework.stereotype.Service;
 public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseBase>
     implements CourseBaseService {
 
+    /**
+     * 分页查询课程列表
+     * @param pageParam 分页参数
+     * @param queryCoursePageReq 查询条件
+     * @return 课程列表
+     */
+    @Override
+    public PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageReq queryCoursePageReq) {
+        // 1. 构建查询对象
+        LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
+        // 1.1 课程名称模糊查询
+        queryWrapper.like(StringUtils.isNotBlank(queryCoursePageReq.getCourseName()), CourseBase::getName, queryCoursePageReq.getCourseName());
+        // 1.2 课程审核状态精确查询
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageReq.getAuditStatus()), CourseBase::getAuditStatus, queryCoursePageReq.getAuditStatus());
+        // 1.3 课程发布状态精确查询
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageReq.getPublishStatus()), CourseBase::getStatus, queryCoursePageReq.getPublishStatus());
+
+        // 2. 分页查询
+        // 2.1 构建分页对象
+        Page<CourseBase> page = new Page<>(pageParam.getPageNo(), pageParam.getPageSize());
+        // 2.2 分页查询
+        Page<CourseBase> res = baseMapper.selectPage(page, queryWrapper);
+        // 2.3 封装结果
+        return new PageResult<>(res.getRecords(), res.getTotal(), pageParam.getPageNo(), pageParam.getPageSize());
+    }
 }
 
 

@@ -1,7 +1,10 @@
 package com.dango.content.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.content.model.dto.QueryCoursePageReq;
 import com.dango.content.model.entity.CourseBase;
+import com.dango.model.PageParams;
+import com.dango.model.PageResult;
 
 
 /**
@@ -10,5 +13,11 @@ import com.dango.content.model.entity.CourseBase;
 * @createDate 2024-01-18 11:57:33
 */
 public interface CourseBaseService extends IService<CourseBase> {
-
+    /**
+     * 分页查询课程列表
+     * @param pageParam 分页参数
+     * @param queryCoursePageReq 查询条件
+     * @return 课程列表
+     */
+    PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageReq queryCoursePageReq);
 }

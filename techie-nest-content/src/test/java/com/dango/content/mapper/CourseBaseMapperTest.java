@@ -26,16 +26,14 @@ class CourseBaseMapperTest {
     // 测试 mapper
     @Test
     void testCourseBaseMapper() {
-        CourseBase courseBase = courseBaseMapper.selectById(10L);
+        CourseBase courseBase = courseBaseMapper.selectById(74L);
         Assertions.assertNotNull(courseBase);
 
         // 测试查询接口
         LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
         QueryCoursePageReq req = QueryCoursePageReq.builder().courseName("java")
-                .publishStatus("2")
                 .build();
-        queryWrapper.like(req.getCourseName() != null, CourseBase::getName, req.getCourseName())
-                .eq(req.getPublishStatus() != null, CourseBase::getStatus, req.getPublishStatus());
+        queryWrapper.like(req.getCourseName() != null, CourseBase::getName, req.getCourseName());
         PageParams pageParams = new PageParams();
         Page<CourseBase> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         Page<CourseBase> res = courseBaseMapper.selectPage(page, queryWrapper);
@@ -43,6 +41,6 @@ class CourseBaseMapperTest {
         long total = res.getTotal();
         PageResult<CourseBase> pageResult = new PageResult<>(items, total, pageParams.getPageNo(), pageParams.getPageSize());
 
-
+        System.out.println(pageResult);
     }
 }
