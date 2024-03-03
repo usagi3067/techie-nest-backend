@@ -2,25 +2,25 @@
 drop table if exists course_base;
 create table course_base
 (
-    id           bigint auto_increment                    primary key comment '主键',
-    name         varchar(100)                             not null comment '课程名称',
-    company_name varchar(255)                             not null default '' comment '机构名称',
-    company_id   bigint                                   not null comment '机构id',
-    users        varchar(500)                             not null comment '适用人群',
-    tags         varchar(500)                             default null comment '课程标签',
-    mt           varchar(500)                             not null comment '大分类',
-    st           varchar(500)                             not null comment '小分类',
-    grade        varchar(500)                             not null comment '课程等级',
-    teach_mode   varchar(500)                             not null comment '授课模式(common普通, record录播, live直播)',
-    description  text                                     not null comment '课程介绍',
-    pic          varchar(500)                             null comment '课程图片',
-    date_created datetime(3) default CURRENT_TIMESTAMP(3) not null comment '创建时间',
-    date_updated datetime(3) default CURRENT_TIMESTAMP(3) not null on update CURRENT_TIMESTAMP(3) comment '更新时间',
-    created_by   varchar(50)                              not null comment '创建人',
-    updated_by   varchar(50)                              not null comment '更新人',
-    is_delete    tinyint     default 0                    not null comment '是否删除',
-    audit_status varchar(10)                              null comment '审核状态',
-    status       varchar(10) default '1'                  null comment '课程状态(1:未发布, 2:已发布, 3: 下线)'
+    id           bigint auto_increment primary key comment '主键',
+    name         varchar(100)                              not null comment '课程名称',
+    company_name varchar(255)                              not null default '' comment '机构名称',
+    company_id   bigint                                    not null comment '机构id',
+    users        varchar(500)                              not null comment '适用人群',
+    tags         varchar(500) default null comment '课程标签',
+    mt           varchar(500)                              not null comment '大分类',
+    st           varchar(500)                              not null comment '小分类',
+    grade        varchar(500)                              not null comment '课程等级',
+    teach_mode   varchar(500)                              not null comment '授课模式(common普通, record录播, live直播)',
+    description  text                                      not null comment '课程介绍',
+    pic          varchar(500)                              null comment '课程图片',
+    date_created datetime(3)  default CURRENT_TIMESTAMP(3) not null comment '创建时间',
+    date_updated datetime(3)  default CURRENT_TIMESTAMP(3) not null on update CURRENT_TIMESTAMP(3) comment '更新时间',
+    created_by   varchar(50)                               not null comment '创建人',
+    updated_by   varchar(50)                               not null comment '更新人',
+    is_delete    tinyint      default 0                    not null comment '是否删除',
+    audit_status varchar(10)                               null comment '审核状态',
+    status       varchar(10)  default '1'                  null comment '课程状态(1:未发布, 2:已发布, 3: 下线)'
 )
     comment '课程基本信息表';
 
@@ -210,5 +210,4 @@ VALUES (1, 1232141425, '', 'JAVA8/9/10新特性讲解', 'java爱好者,有一定
         'Spring Cloud是一系列框架的有序集合。它利用Spring Boot的开发便利性巧妙地简化了分布式系统基础设施的开发，如服务发现注册、配置中心、消息总线、负载均衡、断路器、数据监控等，都可以用Spring Boot的开发风格做到一键启动和部署。Spring Cloud并没有重复制造轮子，它只是将各家公司开发的比较成熟、经得起实际考验的服务框架组合起来，通过Spring Boot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终给开发者留出了一套简单易懂、易部署和易维护的分布式系统开发工具包。',
         '/mediafiles/2023/02/09/ef29eb93515e32f2d897956d5d914db7.png', '2023-02-09 11:10:42', '2023-02-09 11:50:43',
         'dango', 'dango', '202004', '203002');
-
 

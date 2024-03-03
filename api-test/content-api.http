@@ -1,0 +1,11 @@
+###
+POST {{content_host}}/api/content/course/list
+Content-Type: application/json
+
+{
+  "auditStatus": "202004",
+  "publishStatus": "203001",
+  "courseName": "java"
+}
+
+<> 2024-03-02T101611.200.json
