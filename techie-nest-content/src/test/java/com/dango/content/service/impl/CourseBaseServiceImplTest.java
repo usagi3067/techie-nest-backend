@@ -1,6 +1,6 @@
 package com.dango.content.service.impl;
 
-import com.dango.content.model.dto.QueryCoursePageReq;
+import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
 import com.dango.model.PageParams;
@@ -9,12 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author dango
@@ -41,15 +38,15 @@ class CourseBaseServiceImplTest {
     @Test
     void queryCoursePageList() {
         // 查询条件
-        QueryCoursePageReq queryCoursePageReq = new QueryCoursePageReq();
-        queryCoursePageReq.setCourseName("java");
-        queryCoursePageReq.setAuditStatus("202004");
-        queryCoursePageReq.setPublishStatus("203001");
+        QueryCoursePageDto queryCoursePageDto = new QueryCoursePageDto();
+        queryCoursePageDto.setCourseName("java");
+        queryCoursePageDto.setAuditStatus("202004");
+        queryCoursePageDto.setPublishStatus("203001");
         // 分页参数
         PageParams pageParams = new PageParams();
         pageParams.setPageNo(1);
         pageParams.setPageSize(10);
-        PageResult<CourseBase> pageResult = courseBaseService.queryCoursePageList(pageParams, queryCoursePageReq);
+        PageResult<CourseBase> pageResult = courseBaseService.queryCoursePageList(pageParams, queryCoursePageDto);
         log.info("{}", pageResult);
     }
 }

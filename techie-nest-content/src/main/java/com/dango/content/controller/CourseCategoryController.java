@@ -1,11 +1,12 @@
 package com.dango.content.controller;
 
-import com.dango.content.model.dto.CourseCategoryTreeResp;
+import com.dango.content.model.dto.CourseCategoryTreeDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.dango.content.service.CourseCategoryService;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -17,8 +18,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/course-category")
 public class CourseCategoryController {
+    @Resource
+    private CourseCategoryService courseCategoryService;
+
     @GetMapping("/tree-nodes")
-    public List<CourseCategoryTreeResp> queryTreeNodes() {
-        return null;
+    public List<CourseCategoryTreeDto> queryTreeNodes() {
+        return courseCategoryService.queryTreeNodes("1");
     }
 }

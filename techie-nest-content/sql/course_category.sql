@@ -10,7 +10,6 @@ CREATE TABLE `course_category`
     PRIMARY KEY (`id`) USING BTREE
 ) COMMENT ='课程分类';
 
-
 INSERT INTO tn_content.course_category (id, name, parent_id, is_show, order_by, is_leaf)
 VALUES ('1', '根结点', '0', 1, 1, 0);
 INSERT INTO tn_content.course_category (id, name, parent_id, is_show, order_by, is_leaf)
@@ -299,3 +298,30 @@ INSERT INTO tn_content.course_category (id, name, parent_id, is_show, order_by, 
 VALUES ('1-9-8', 'WinCE', '1-9', 1, 8, 1);
 INSERT INTO tn_content.course_category (id, name, parent_id, is_show, order_by, is_leaf)
 VALUES ('1-9-9', '嵌入式', '1-9', 1, 9, 1);
+
+
+select
+    one.id            one_id,
+    one.name          one_name,
+    one.parent_id      one_parentid,
+    one.order_by       one_orderby,
+    two.id            two_id,
+    two.name          two_name,
+    two.parent_id      two_parentid,
+    two.order_by       two_orderby
+from course_category one
+         inner join course_category two on one.id = two.parent_id
+where one.parent_id = 1
+  and one.is_show = 1
+  and two.is_show = 1
+order by one.order_by,
+         two.order_by;
+
+
+# 对于处理具有未知深度的树状数据结构查询， 可以使用递归公用表表达式（CTE）来遍历课程分类的层次结构。查询语句如下：
+WITH RECURSIVE r AS (
+    SELECT * FROM course_category p WHERE id = '1'
+    UNION ALL
+    SELECT t.* FROM course_category t INNER JOIN r ON r.id = t.parent_id
+)
+SELECT * FROM r ORDER BY r.id, r.order_by;

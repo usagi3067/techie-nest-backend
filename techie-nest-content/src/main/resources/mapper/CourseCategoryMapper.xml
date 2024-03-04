@@ -14,7 +14,15 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,parent_id,
-        is_show,order_by,is_leaf
+        id, name, parent_id, is_show, order_by, is_leaf
     </sql>
+    <select id="selectTreeNodes" resultType="com.dango.content.model.dto.CourseCategoryTreeDto" parameterType="string">
+        with recursive r as (
+        select * from tn_content.course_category
+        where id = #{id}
+        union all
+        select c.* from tn_content.course_category c inner join r on c.parent_id = r.id
+        )
+        select * from r order by r.id, r.order_by
+    </select>
 </mapper>

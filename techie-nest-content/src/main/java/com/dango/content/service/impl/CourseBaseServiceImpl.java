@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.mapper.CourseBaseMapper;
-import com.dango.content.model.dto.QueryCoursePageReq;
+import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
 import com.dango.model.PageParams;
@@ -24,19 +24,19 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
     /**
      * 分页查询课程列表
      * @param pageParam 分页参数
-     * @param queryCoursePageReq 查询条件
+     * @param queryCoursePageDto 查询条件
      * @return 课程列表
      */
     @Override
-    public PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageReq queryCoursePageReq) {
+    public PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageDto queryCoursePageDto) {
         // 1. 构建查询对象
         LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
         // 1.1 课程名称模糊查询
-        queryWrapper.like(StringUtils.isNotBlank(queryCoursePageReq.getCourseName()), CourseBase::getName, queryCoursePageReq.getCourseName());
+        queryWrapper.like(StringUtils.isNotBlank(queryCoursePageDto.getCourseName()), CourseBase::getName, queryCoursePageDto.getCourseName());
         // 1.2 课程审核状态精确查询
-        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageReq.getAuditStatus()), CourseBase::getAuditStatus, queryCoursePageReq.getAuditStatus());
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getAuditStatus()), CourseBase::getAuditStatus, queryCoursePageDto.getAuditStatus());
         // 1.3 课程发布状态精确查询
-        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageReq.getPublishStatus()), CourseBase::getStatus, queryCoursePageReq.getPublishStatus());
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getPublishStatus()), CourseBase::getStatus, queryCoursePageDto.getPublishStatus());
 
         // 2. 分页查询
         // 2.1 构建分页对象

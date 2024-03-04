@@ -9,3 +9,6 @@ Content-Type: application/json
 }
 
 <> 2024-03-02T101611.200.json
+
+### 课程分类查询
+GET {{content_host}}/api/content/course-category/tree-nodes

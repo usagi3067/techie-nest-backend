@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QueryCoursePageReq implements Serializable {
+public class QueryCoursePageDto implements Serializable {
     private static final long serialVersionUID = -3042686055658047285L;
     @ApiModelProperty("课程名称")
     private String courseName;

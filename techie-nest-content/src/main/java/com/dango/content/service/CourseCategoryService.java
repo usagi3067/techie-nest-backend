@@ -1,7 +1,10 @@
 package com.dango.content.service;
 
+import com.dango.content.model.dto.CourseCategoryTreeDto;
 import com.dango.content.model.entity.CourseCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author dango
@@ -10,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CourseCategoryService extends IService<CourseCategory> {
 
+    /**
+     * 课程分类树形结构查询
+     * @param id 父节点id
+     * @return 课程分类树形结构
+     */
+    List<CourseCategoryTreeDto> queryTreeNodes(String id);
 }

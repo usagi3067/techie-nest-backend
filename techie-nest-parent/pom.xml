@@ -30,6 +30,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <druid-spring-boot-starter.version>1.2.8</druid-spring-boot-starter.version>
         <knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
+        <guava.version>32.0.1-jre</guava.version>
     </properties>
 
     <dependencyManagement>
@@ -85,6 +86,11 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-spring-boot-starter</artifactId>
                 <version>${knife4j-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
 

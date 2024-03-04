@@ -2,7 +2,7 @@ package com.dango.content.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.dango.content.model.dto.QueryCoursePageReq;
+import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
@@ -31,7 +31,7 @@ class CourseBaseMapperTest {
 
         // 测试查询接口
         LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
-        QueryCoursePageReq req = QueryCoursePageReq.builder().courseName("java")
+        QueryCoursePageDto req = QueryCoursePageDto.builder().courseName("java")
                 .build();
         queryWrapper.like(req.getCourseName() != null, CourseBase::getName, req.getCourseName());
         PageParams pageParams = new PageParams();

@@ -1,7 +1,10 @@
 package com.dango.content.mapper;
 
+import com.dango.content.model.dto.CourseCategoryTreeDto;
 import com.dango.content.model.entity.CourseCategory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author dango
@@ -10,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.dango.content.model.entity.CourseCategory
 */
 public interface CourseCategoryMapper extends BaseMapper<CourseCategory> {
-
+    List<CourseCategoryTreeDto> selectTreeNodes(String id);
 }
 
 
