@@ -1,6 +1,8 @@
 package com.dango.content.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.content.model.dto.AddCourseDto;
+import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.model.PageParams;
@@ -20,4 +22,12 @@ public interface CourseBaseService extends IService<CourseBase> {
      * @return 课程列表
      */
     PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageDto queryCoursePageDto);
+
+    /**
+     * 添加课程详细信息
+     * @param companyId 机构id
+     * @param addCourseDto 课程详细信息
+     * @return 课程详细信息
+     */
+    CourseBaseInfoDto addCourseBase(Long companyId, AddCourseDto addCourseDto);
 }

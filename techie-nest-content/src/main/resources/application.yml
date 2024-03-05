@@ -13,7 +13,7 @@ spring:
     name: content
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql:///tn_content?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql:///tn_content?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
     username: root
     password: A10251123a
 server:

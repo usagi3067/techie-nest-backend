@@ -16,8 +16,8 @@ create table course_base
     pic          varchar(500)                              null comment '课程图片',
     date_created datetime(3)  default CURRENT_TIMESTAMP(3) not null comment '创建时间',
     date_updated datetime(3)  default CURRENT_TIMESTAMP(3) not null on update CURRENT_TIMESTAMP(3) comment '更新时间',
-    created_by   varchar(50)                               not null comment '创建人',
-    updated_by   varchar(50)                               not null comment '更新人',
+    created_by   varchar(50)  default 'sys'                not null comment '创建人',
+    updated_by   varchar(50)  default 'sys'                not null comment '更新人',
     is_delete    tinyint      default 0                    not null comment '是否删除',
     audit_status varchar(10)                               null comment '审核状态',
     status       varchar(10)  default '1'                  null comment '课程状态(1:未发布, 2:已发布, 3: 下线)'

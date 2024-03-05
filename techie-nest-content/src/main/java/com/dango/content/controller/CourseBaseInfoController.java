@@ -1,5 +1,7 @@
 package com.dango.content.controller;
 
+import com.dango.content.model.dto.AddCourseDto;
+import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
@@ -8,10 +10,8 @@ import com.dango.model.PageResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -32,6 +32,13 @@ public class CourseBaseInfoController {
     @PostMapping("/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody(required = false) QueryCoursePageDto req) {
         return courseBaseService.queryCoursePageList(pageParams, req);
+    }
+
+    @ApiOperation("课程新增接口")
+    @PostMapping
+    public CourseBaseInfoDto addCourseBase(@RequestBody @Validated AddCourseDto addCourseDto) {
+        Long companyId = 1234L;
+        return courseBaseService.addCourseBase(companyId, addCourseDto);
     }
 
 }
