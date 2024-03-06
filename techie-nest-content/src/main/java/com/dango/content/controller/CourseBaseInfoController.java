@@ -2,6 +2,7 @@ package com.dango.content.controller;
 
 import com.dango.content.model.dto.AddCourseDto;
 import com.dango.content.model.dto.CourseBaseInfoDto;
+import com.dango.content.model.dto.EditCourseDto;
 import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
@@ -23,22 +24,35 @@ import javax.annotation.Resource;
 @RestController
 @Slf4j
 @Api(tags = "课程信息编辑接口")
-@RequestMapping("/course")
+@RequestMapping()
 public class CourseBaseInfoController {
     @Resource
     private CourseBaseService courseBaseService;
 
     @ApiOperation("课程查询接口")
-    @PostMapping("/list")
+    @PostMapping("/course/list")
     public PageResult<CourseBase> list(PageParams pageParams, @RequestBody(required = false) QueryCoursePageDto req) {
         return courseBaseService.queryCoursePageList(pageParams, req);
     }
 
     @ApiOperation("课程新增接口")
-    @PostMapping
+    @PostMapping("/course")
     public CourseBaseInfoDto addCourseBase(@RequestBody @Validated AddCourseDto addCourseDto) {
         Long companyId = 1234L;
         return courseBaseService.addCourseBase(companyId, addCourseDto);
+    }
+
+    @ApiOperation("根据课程id查询课程信息")
+    @GetMapping("/course/{id}")
+    public CourseBaseInfoDto getCourseBaseById(@PathVariable("id") Long id) {
+        return courseBaseService.getCourseBaseInfo(id);
+    }
+
+    @ApiOperation("修改课程基本信息")
+    @PutMapping("/course")
+    public CourseBaseInfoDto updateCourseBase(@RequestBody @Validated EditCourseDto editCourseDto) {
+        Long companyId = 1234L;
+        return courseBaseService.updateCourseBase(companyId, editCourseDto);
     }
 
 }

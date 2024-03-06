@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dango.content.mapper.TeachPlanMapper">
+
+    <resultMap id="BaseResultMap" type="com.dango.content.model.entity.TeachPlan">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="planName" column="plan_name" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+        <result property="grade" column="grade" jdbcType="SMALLINT"/>
+        <result property="mediaType" column="media_type" jdbcType="VARCHAR"/>
+        <result property="startTime" column="start_time" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="end_time" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="timeLength" column="time_length" jdbcType="VARCHAR"/>
+        <result property="orderBy" column="order_by" jdbcType="INTEGER"/>
+        <result property="courseId" column="course_id" jdbcType="BIGINT"/>
+        <result property="coursePubId" column="course_pub_id" jdbcType="BIGINT"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="isPreview" column="is_preview" jdbcType="CHAR"/>
+        <result property="dateCreated" column="date_created" jdbcType="TIMESTAMP"/>
+        <result property="dateUpdated" column="date_updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="treeNodeResultMap" type="com.dango.content.model.dto.TeachPlanDto">
+        <!--        一级数据映射-->
+        <id column="root_id" property="id"/>
+        <result column="root_plan_name" property="planName"/>
+        <result column="root_pid" property="parentId"/>
+        <result column="root_grade" property="grade"/>
+        <result column="root_media_type" property="mediaType"/>
+        <result column="root_start_time" property="startTime"/>
+        <result column="root_end_time" property="endTime"/>
+        <result column="root_order_by" property="orderBy"/>
+        <result column="root_course_id" property="courseId"/>
+        <result column="root_course_pub_id" property="coursePubId"/>
+        <!--        一级中包含多个二级数据-->
+        <collection property="teachPlanTreeNodes" ofType="com.dango.content.model.dto.TeachPlanDto">
+            <!--            二级数据映射-->
+            <id column="child_id" property="id"/>
+            <result column="child_plan_name" property="planName"/>
+            <result column="child_pid" property="parentId"/>
+            <result column="child_grade" property="grade"/>
+            <result column="child_media_type" property="mediaType"/>
+            <result column="child_start_time" property="startTime"/>
+            <result column="child_end_time" property="endTime"/>
+            <result column="child_order_by" property="orderBy"/>
+            <result column="child_course_id" property="courseId"/>
+            <result column="child_course_pub_id" property="coursePubId"/>
+
+            <association property="teachPlanMedia" javaType="com.dango.content.model.entity.TeachPlanMedia">
+                <result column="teach_plan_media_id" property="id"/>
+                <result column="media_id" property="mediaId"/>
+                <result column="media_file_name" property="mediaFileName"/>
+                <result column="child_id" property="teachPlanId"/>
+                <result column="child_course_id" property="courseId"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,plan_name,parent_id,
+        grade,media_type,start_time,
+        end_time,description,time_length,
+        order_by,course_id,course_pub_id,
+        is_delete,is_preview,date_created,
+        date_updated
+    </sql>
+
+    <select id = "findTeachPlanList" resultMap="treeNodeResultMap" parameterType="long">
+        select
+            root.id  root_id,
+            root.plan_name root_plan_name,
+            root.parent_id root_pid,
+            root.grade root_grade,
+            root.media_type root_media_type,
+            root.start_time root_start_time,
+            root.end_time root_end_time,
+            root.order_by root_order_by,
+            root.course_id root_course_id,
+            root.course_pub_id root_course_pub_id,
+            child.id child_id,
+            child.plan_name child_plan_name,
+            child.parent_id child_pid,
+            child.grade child_grade,
+            child.media_type child_media_type,
+            child.start_time child_start_time,
+            child.end_time child_end_time,
+            child.order_by child_order_by,
+            child.course_id child_course_id,
+            child.course_pub_id child_course_pub_id,
+            media.media_file_name media_file_name,
+            media.media_id media_id,
+            media.id teach_plan_media_id
+        from teach_plan root
+        left join teach_plan child on root.id = child.parent_id
+        left join teach_plan_media media on child.id = media.teach_plan_id
+        where root.parent_id = 0 and root.course_id = #{value}
+        order by root.order_by, child.order_by
+    </select>
+</mapper>

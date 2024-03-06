@@ -1,8 +1,5 @@
 package com.dango.content.model.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -42,6 +39,7 @@ public class CourseBaseInfoDto {
     @ApiModelProperty("课程等级")
     private String grade;
 
+    //todo 需要改大驼峰
     @ApiModelProperty("教学模式（普通、 录播、 直播等）")
     private String teachMode;
 

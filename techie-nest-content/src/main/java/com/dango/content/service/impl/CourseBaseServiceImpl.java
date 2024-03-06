@@ -6,17 +6,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.mapper.CourseBaseMapper;
 import com.dango.content.mapper.CourseCategoryMapper;
 import com.dango.content.mapper.CourseMarketMapper;
-import com.dango.content.model.dto.AddCourseDto;
-import com.dango.content.model.dto.CourseBaseInfoDto;
-import com.dango.content.model.dto.CourseMarket;
-import com.dango.content.model.dto.QueryCoursePageDto;
+import com.dango.content.model.dto.*;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
+import com.dango.exception.BusinessException;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -89,7 +88,8 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         return getCourseBaseInfo(courseBase.getId());
     }
 
-    private CourseBaseInfoDto getCourseBaseInfo(Long id) {
+    @Override
+    public CourseBaseInfoDto getCourseBaseInfo(Long id) {
         // 从课程基本信息表中查询课程基本信息
         CourseBase courseBase = baseMapper.selectById(id);
         if (Objects.isNull(courseBase)) {
@@ -114,7 +114,39 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         return courseBaseInfoDto;
     }
 
-    private int saveCourseMarket(CourseMarket courseMarket) {
+    @Transactional
+    @Override
+    public CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto dto) {
+        Long courseId = dto.getId();
+        CourseBase courseBase = baseMapper.selectById(courseId);
+        if (Objects.isNull(courseBase)) {
+            BusinessException.cast("课程不存在");
+        }
+
+        // 校验教学机构只能修改自己的课程
+        if (!companyId.equals(courseBase.getCompanyId())) {
+            BusinessException.cast("无权限修改他人课程");
+        }
+
+        // 封装课程基本信息
+        BeanUtils.copyProperties(dto, courseBase);
+        courseBase.setDateUpdated(LocalDateTime.now());
+
+        // 更新课程基本信息
+        baseMapper.updateById(courseBase);
+
+        // 封装课程营销信息
+        CourseMarket courseMarket = new CourseMarket();
+        BeanUtils.copyProperties(dto, courseMarket);
+
+        // 保存课程营销信息
+        saveCourseMarket(courseMarket);
+
+        // 查询并返回课程详细信息， 包含基本信息和营销信息
+        return getCourseBaseInfo(courseId);
+    }
+
+    private void saveCourseMarket(CourseMarket courseMarket) {
         // 参数合法性校验
         String charge = courseMarket.getCharge();
         if (StringUtils.isEmpty(charge)) {
@@ -132,9 +164,9 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         Long id = courseMarket.getId();
         CourseMarket courseMarketTmp = courseMarketMapper.selectById(id);
         if (Objects.isNull(courseMarketTmp)) {
-            return courseMarketMapper.insert(courseMarket);
+            courseMarketMapper.insert(courseMarket);
         } else {
-            return courseMarketMapper.updateById(courseMarket);
+            courseMarketMapper.updateById(courseMarket);
         }
     }
 }
