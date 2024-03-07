@@ -1,13 +1,12 @@
 package com.dango.content.controller;
 
+import com.dango.content.model.dto.SaveTeachPlanDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.service.TeachPlanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,8 +24,18 @@ public class TeachPlanController {
 
     @ApiOperation("查询课程计划树形列表")
     @ApiImplicitParam(value = "courseId",name = "课程Id",required = true,dataType = "Long",paramType = "path")
-    @GetMapping("/teachplan/{courseId}/tree-nodes")
+    @GetMapping("/teach-plan/{courseId}/tree-nodes")
     public List<TeachPlanDto> getTreeNodes(@PathVariable Long courseId){
         return teachPlanService.findTeachPlanTree(courseId);
+    }
+
+    /**
+     * 根据有无传 id 判断是新增还是修改， 有 id 则修改，无 id 则新增
+     * @param saveTeachPlanDto 保存课程计划的 dto
+     */
+    @ApiOperation("课程计划参加或修改")
+    @PostMapping("/teach-plan")
+    public void saveTeachPlan(@RequestBody SaveTeachPlanDto saveTeachPlanDto){
+        teachPlanService.saveTeachPlan(saveTeachPlanDto);
     }
 }

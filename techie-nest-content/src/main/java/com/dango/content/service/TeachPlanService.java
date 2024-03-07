@@ -1,6 +1,7 @@
 package com.dango.content.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.content.model.dto.SaveTeachPlanDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.TeachPlan;
 
@@ -18,4 +19,6 @@ public interface TeachPlanService extends IService<TeachPlan> {
      * @return 课程计划树
      */
     List<TeachPlanDto> findTeachPlanTree(long courseId);
+
+    void saveTeachPlan(SaveTeachPlanDto saveTeachPlanDto);
 }

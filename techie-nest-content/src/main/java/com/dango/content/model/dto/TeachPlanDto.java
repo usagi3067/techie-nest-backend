@@ -60,12 +60,6 @@ public class TeachPlanDto {
     @ApiModelProperty("是否支持试学或预览（试看）")
     private String isPreview;
 
-    @ApiModelProperty("创建时间")
-    private LocalDateTime createDate;
-
-    @ApiModelProperty("修改时间")
-    private LocalDateTime changeDate;
-
     //todo
     @ApiModelProperty("媒资信息")
     private TeachPlanMedia teachPlanMedia;

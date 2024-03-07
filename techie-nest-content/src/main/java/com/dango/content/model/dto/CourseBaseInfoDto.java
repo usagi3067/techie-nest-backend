@@ -3,8 +3,6 @@ package com.dango.content.model.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * @author dango
  * @description 课程信息响应 Dto
@@ -48,12 +46,6 @@ public class CourseBaseInfoDto {
 
     @ApiModelProperty("课程封面")
     private String pic;
-
-    @ApiModelProperty("创建时间")
-    private LocalDateTime dateCreated;
-
-    @ApiModelProperty("更新时间")
-    private LocalDateTime dateUpdated;
 
     @ApiModelProperty("创建人")
     private String createdBy;
