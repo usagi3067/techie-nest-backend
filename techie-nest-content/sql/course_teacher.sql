@@ -10,7 +10,7 @@ CREATE TABLE `course_teacher`
     date_created   datetime(3)   default CURRENT_TIMESTAMP(3) not null comment '创建时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE KEY `courseId_teacherId_unique` (`course_id`, `teacher_name`) USING BTREE
-) COMMENT ='课程-教师关系表';
+) COMMENT ='师资编辑接口关系表';
 
 INSERT INTO `course_teacher` (`id`, `course_id`, `teacher_name`, `position`, `introduction`, `photograph`)
 VALUES (1, 72, 'wangxu', 'java高级讲师', '1111',

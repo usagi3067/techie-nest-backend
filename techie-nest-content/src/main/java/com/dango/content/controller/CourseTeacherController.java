@@ -14,13 +14,13 @@ import java.util.List;
 
 /**
  * @author dango
- * @description 课程-教师
+ * @description 师资编辑接口
  * @date 2024-03-07
  */
 @Slf4j
 @RestController
 @RequestMapping("courseTeacher")
-@Api(value = "课程-教师",tags = "课程-教师")
+@Api(value = "师资编辑接口",tags = "师资编辑接口")
 public class CourseTeacherController {
     @Resource
     private CourseTeacherService courseTeacherService;

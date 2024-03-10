@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 课程-教师关系表
+ * 师资编辑接口关系表
  * @TableName course_teacher
  */
 @TableName(value ="course_teacher")

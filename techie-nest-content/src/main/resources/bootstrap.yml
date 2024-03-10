@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: content
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      discovery:
+        namespace: dev
+        group: techie-nest-backend
+      config:
+        namespace: dev
+        group: techie-nest-backend
+        file-extension: yml
+        shared-configs:
+          - data-id: mybatis-plus-${spring.profiles.active}.yml
+            group: techie-nest-backend
+            refresh: true
+#          - data-id: spring-mvc-${spring.profiles.active}.yml
+#            group: techie-nest-backend
+#            refresh: true
