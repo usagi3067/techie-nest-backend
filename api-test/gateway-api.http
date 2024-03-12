@@ -1,0 +1,6 @@
+POST {{gateway_host}}/api/content/course/list?pageNo=2&pageSize=1
+Content-Type: application/json
+
+{
+  "auditStatus": "202002"
+}
