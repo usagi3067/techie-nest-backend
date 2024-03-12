@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 
+@lombok.Getter
 @RefreshScope
 @ConfigurationProperties(prefix = "user")
 public class User implements InitializingBean, DisposableBean {
@@ -29,16 +30,8 @@ public class User implements InitializingBean, DisposableBean {
 
     private int age;
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getAge() {
-        return age;
     }
 
     public void setAge(int age) {

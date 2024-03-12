@@ -17,3 +17,5 @@ spring:
           - data-id: mybatis-plus-${spring.profiles.active}.yml
             group: techie-nest-backend
             refresh: true
+
+
