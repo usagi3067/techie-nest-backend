@@ -17,5 +17,26 @@ spring:
           - data-id: mybatis-plus-${spring.profiles.active}.yml
             group: techie-nest-backend
             refresh: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  main:
+    allow-circular-references: true
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      app-name: media-process-service
+      port: 9999
+      address:
+      ip:
+      log-path: ./data/applogs/xxl-job/jobhandler
+      log-retention-days: 30
+    accessToken: default_token
+
+
 
 

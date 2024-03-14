@@ -31,6 +31,7 @@
         <druid-spring-boot-starter.version>1.2.8</druid-spring-boot-starter.version>
         <knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
         <guava.version>32.0.1-jre</guava.version>
+        <xxl-job-core.version>2.4.0</xxl-job-core.version>
     </properties>
 
     <dependencyManagement>
@@ -75,6 +76,11 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>

@@ -11,8 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @MapperScan("com.dango.system.mapper")
 @SpringBootApplication
-public class MainApplication {
+public class TechieNestSystemApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MainApplication.class, args);
+        SpringApplication.run(TechieNestSystemApplication.class, args);
     }
 }
