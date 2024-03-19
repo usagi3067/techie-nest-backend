@@ -23,6 +23,7 @@ import io.minio.messages.DeleteObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,6 +112,10 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     public PageResult<MediaFiles> queryMediaFiles(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto) {
         //构建查询条件对象
         LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MediaFiles::getCompanyId, companyId)
+                .eq(queryMediaParamsDto.getAuditStatus()!=null, MediaFiles::getAuditStatus, queryMediaParamsDto.getAuditStatus())
+                .eq(StringUtils.isNotBlank(queryMediaParamsDto.getFileType()), MediaFiles::getFileType, queryMediaParamsDto.getFileType())
+                .like(StringUtils.isNotBlank(queryMediaParamsDto.getFilename()), MediaFiles::getFilename, queryMediaParamsDto.getFilename());
         //分页对象
         Page<MediaFiles> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         // 查询数据内容获得结果
@@ -138,7 +143,10 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     @Override
     public MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName) {
         // 查询文件是否已存在
-        MediaFiles mediaFiles = baseMapper.selectById(fileMd5);
+        LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MediaFiles::getFileId, fileMd5);
+        queryWrapper.eq(MediaFiles::getCompanyId, companyId);
+        MediaFiles mediaFiles = baseMapper.selectOne(queryWrapper);
         if (Objects.isNull(mediaFiles)) {
             mediaFiles = new MediaFiles();
             BeanUtils.copyProperties(uploadFileParamsDto, mediaFiles);

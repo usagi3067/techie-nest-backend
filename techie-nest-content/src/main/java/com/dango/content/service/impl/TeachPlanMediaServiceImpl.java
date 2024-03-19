@@ -1,9 +1,9 @@
 package com.dango.content.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dango.content.mapper.TeachPlanMediaMapper;
 import com.dango.content.model.entity.TeachPlanMedia;
 import com.dango.content.service.TeachPlanMediaService;
-import com.dango.content.mapper.TeachPlanMediaMapper;
 import org.springframework.stereotype.Service;
 
 /**

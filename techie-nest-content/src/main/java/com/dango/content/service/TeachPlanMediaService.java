@@ -1,7 +1,7 @@
 package com.dango.content.service;
 
-import com.dango.content.model.entity.TeachPlanMedia;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.content.model.entity.TeachPlanMedia;
 
 /**
 * @author dango

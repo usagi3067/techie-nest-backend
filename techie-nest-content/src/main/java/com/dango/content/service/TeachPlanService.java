@@ -1,9 +1,12 @@
 package com.dango.content.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.content.model.dto.BindTeachPlanMediaDto;
 import com.dango.content.model.dto.SaveTeachPlanDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.TeachPlan;
+import com.dango.content.model.entity.TeachPlanMedia;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,4 +24,12 @@ public interface TeachPlanService extends IService<TeachPlan> {
     List<TeachPlanDto> findTeachPlanTree(long courseId);
 
     void saveTeachPlan(SaveTeachPlanDto saveTeachPlanDto);
+
+    /**
+     * 关联媒资文件
+     * @param bindTeachPlanMediaDto 关联媒资文件dto
+     * @return 关联后的课程计划媒资文件
+     */
+    @Transactional
+    TeachPlanMedia associationMedia(BindTeachPlanMediaDto bindTeachPlanMediaDto);
 }

@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("courseTeacher")
+@RequestMapping("/courseTeacher")
 @Api(value = "师资编辑接口",tags = "师资编辑接口")
 public class CourseTeacherController {
     @Resource

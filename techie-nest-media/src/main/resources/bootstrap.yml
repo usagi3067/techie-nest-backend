@@ -36,7 +36,9 @@ xxl:
       log-path: ./data/applogs/xxl-job/jobhandler
       log-retention-days: 30
     accessToken: default_token
-
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
 

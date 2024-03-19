@@ -83,15 +83,14 @@ public class BigFilesController {
      */
     @ApiOperation(value = "合并文件分块")
     @PostMapping("/upload/merge-chunks")
-    public RestResponse mergeChunks(@RequestParam("fileMd5") String fileMd5, @RequestParam("fileName") String fileName, @RequestParam("chunkTotal") int chunkTotal) throws Exception {
-        Long companyId = 1232141425L;
+    public RestResponse<Boolean> mergeChunks(@RequestParam("fileMd5") String fileMd5, @RequestParam("fileName") String fileName, @RequestParam("chunkTotal") int chunkTotal) throws Exception {
+        long companyId = 1234L;
         //文件信息对象
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
         uploadFileParamsDto.setFilename(fileName);
         uploadFileParamsDto.setTags("视频文件");
         uploadFileParamsDto.setFileType("001002");
-        RestResponse restResponse = mediaFilesService.mergechunks(1232141425L, fileMd5, chunkTotal, uploadFileParamsDto);
-        return restResponse;
+        return mediaFilesService.mergechunks(companyId, fileMd5, chunkTotal, uploadFileParamsDto);
     }
 }
 

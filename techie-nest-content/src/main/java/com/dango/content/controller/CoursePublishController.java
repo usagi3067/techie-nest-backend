@@ -1,0 +1,32 @@
+package com.dango.content.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.ModelAndView;
+
+/**
+ * @author dango
+ * @description
+ * @date 2024-03-19
+ */
+@Controller
+public class CoursePublishController {
+
+    // 处理课程预览页面请求
+    @GetMapping("/coursepreview/{courseId}")
+    public ModelAndView preview(@PathVariable("courseId") Long courseId){
+
+        // 创建一个新的 ModelAndView 对象
+        ModelAndView modelAndView = new ModelAndView();
+
+        // 将模型对象添加到 ModelAndView 中（这里模型对象为空，可以根据需要添加具体数据）
+        modelAndView.addObject("model", null);
+
+        // 设置视图名称为 course_template，返回给客户端
+        modelAndView.setViewName("course_template");
+
+        // 返回 ModelAndView 对象
+        return modelAndView;
+    }
+}
