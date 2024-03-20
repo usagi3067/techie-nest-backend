@@ -90,4 +90,5 @@ public interface MediaFilesService extends IService<MediaFiles> {
     public File downloadFileFromMinIO(String bucket, String objectName);
 
 
+    MediaFiles getFileById(String mediaId);
 }

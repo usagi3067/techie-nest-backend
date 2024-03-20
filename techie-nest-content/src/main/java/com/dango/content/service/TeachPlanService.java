@@ -5,7 +5,6 @@ import com.dango.content.model.dto.BindTeachPlanMediaDto;
 import com.dango.content.model.dto.SaveTeachPlanDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.TeachPlan;
-import com.dango.content.model.entity.TeachPlanMedia;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -27,9 +26,18 @@ public interface TeachPlanService extends IService<TeachPlan> {
 
     /**
      * 关联媒资文件
+     *
      * @param bindTeachPlanMediaDto 关联媒资文件dto
-     * @return 关联后的课程计划媒资文件
      */
     @Transactional
-    TeachPlanMedia associationMedia(BindTeachPlanMediaDto bindTeachPlanMediaDto);
+    void associationMedia(BindTeachPlanMediaDto bindTeachPlanMediaDto);
+
+    /** 解绑教学计划与媒资信息
+     * @param teachPlanId       教学计划id
+     * @param mediaId           媒资信息id
+     */
+    void unAssociationMedia(Long teachPlanId, String mediaId);
+
+    @Transactional
+    void deleteTeachPlan(Long teachplanId);
 }

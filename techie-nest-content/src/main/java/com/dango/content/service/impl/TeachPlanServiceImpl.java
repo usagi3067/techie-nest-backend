@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
-* @author dango
-* @description 针对表【teach_plan(课程计划)】的数据库操作Service实现
-* @createDate 2024-03-06 11:03:10
-*/
+ * @author dango
+ * @description 针对表【teach_plan(课程计划)】的数据库操作Service实现
+ * @createDate 2024-03-06 11:03:10
+ */
 @Service
 public class TeachPlanServiceImpl extends ServiceImpl<TeachPlanMapper, TeachPlan>
-    implements TeachPlanService{
+        implements TeachPlanService {
 
     @Resource
     TeachPlanMediaMapper teachPlanMediaMapper;
@@ -39,6 +39,7 @@ public class TeachPlanServiceImpl extends ServiceImpl<TeachPlanMapper, TeachPlan
 
     /**
      * 保存或新增课程计划
+     *
      * @param saveTeachPlanDto 保存课程计划的 dto
      */
     @Transactional
@@ -64,6 +65,7 @@ public class TeachPlanServiceImpl extends ServiceImpl<TeachPlanMapper, TeachPlan
 
     /**
      * 获取当前课程当前父级下课程计划数量
+     *
      * @param courseId 课程id
      * @param parentId 父级id
      * @return 课程计划数量
@@ -77,22 +79,22 @@ public class TeachPlanServiceImpl extends ServiceImpl<TeachPlanMapper, TeachPlan
 
     @Transactional
     @Override
-    public TeachPlanMedia associationMedia(BindTeachPlanMediaDto bindTeachPlanMediaDto) {
+    public void associationMedia(BindTeachPlanMediaDto bindTeachPlanMediaDto) {
         //教学计划id
         Long teachPlanId = bindTeachPlanMediaDto.getTeachPlanId();
         TeachPlan teachPlan = baseMapper.selectById(teachPlanId);
-        if(teachPlan==null){
+        if (teachPlan == null) {
             throw new BusinessException("教学计划不存在");
         }
         Integer grade = teachPlan.getGrade();
-        if(grade!=2){
+        if (grade != 2) {
             throw new BusinessException("只允许第二级教学计划绑定媒资文件");
         }
         //课程id
         Long courseId = teachPlan.getCourseId();
 
         //先删除原来该教学计划绑定的媒资
-        teachPlanMediaMapper.delete(new LambdaQueryWrapper<TeachPlanMedia>().eq(TeachPlanMedia::getTeachPlanId,teachPlanId));
+        teachPlanMediaMapper.delete(new LambdaQueryWrapper<TeachPlanMedia>().eq(TeachPlanMedia::getTeachPlanId, teachPlanId));
 
         //再添加教学计划与媒资的绑定关系
         TeachPlanMedia teachPlanMedia = new TeachPlanMedia();
@@ -102,7 +104,45 @@ public class TeachPlanServiceImpl extends ServiceImpl<TeachPlanMapper, TeachPlan
         teachPlanMedia.setMediaId(bindTeachPlanMediaDto.getMediaId());
         teachPlanMedia.setDateCreated(LocalDateTime.now());
         teachPlanMediaMapper.insert(teachPlanMedia);
-        return teachPlanMedia;
+    }
+
+    @Override
+    public void unAssociationMedia(Long teachPlanId, String mediaId) {
+        LambdaQueryWrapper<TeachPlanMedia> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TeachPlanMedia::getTeachPlanId, teachPlanId)
+                .eq(TeachPlanMedia::getMediaId, mediaId);
+        teachPlanMediaMapper.delete(queryWrapper);
+    }
+
+    @Transactional
+    @Override
+    public void deleteTeachPlan(Long teachplanId) {
+        if (teachplanId == null)
+            throw new BusinessException("课程计划id为空");
+        TeachPlan teachplan = baseMapper.selectById(teachplanId);
+        // 判断当前课程计划是章还是节
+        Integer grade = teachplan.getGrade();
+        // 当前课程计划为章
+        if (grade == 1) {
+            // 查询当前课程计划下是否有小节
+            LambdaQueryWrapper<TeachPlan> queryWrapper = new LambdaQueryWrapper<>();
+            // select * from teachPlan where parent_id = {当前章计划id}
+            queryWrapper.eq(TeachPlan::getParentId, teachplanId);
+            // 获取一下查询的条目数
+            Integer count = baseMapper.selectCount(queryWrapper);
+            // 如果当前章下还有小节，则抛异常
+            if (count > 0)
+                throw new BusinessException("课程计划信息还有子级信息，无法操作");
+            baseMapper.deleteById(teachplanId);
+        } else {
+            // 课程计划为节，删除改小节课程计划
+            baseMapper.deleteById(teachplanId);
+            // 条件构造器
+            LambdaQueryWrapper<TeachPlanMedia> queryWrapper = new LambdaQueryWrapper<>();
+            // 删除媒资信息中对应teachPlanId的数据
+            queryWrapper.eq(TeachPlanMedia::getTeachPlanId, teachplanId);
+            teachPlanMediaMapper.delete(queryWrapper);
+        }
     }
 }
 

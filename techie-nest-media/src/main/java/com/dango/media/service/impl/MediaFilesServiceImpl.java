@@ -419,6 +419,11 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
         return null;
     }
 
+    @Override
+    public MediaFiles getFileById(String mediaId) {
+        return baseMapper.selectById(mediaId);
+    }
+
     /**
      * 清除分块文件
      * @param chunkFileFolderPath 分块文件路径
