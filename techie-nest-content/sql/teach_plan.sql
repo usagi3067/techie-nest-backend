@@ -400,7 +400,7 @@ VALUES (2, '数据库基础知识', 43, 2, '1', '2019-09-16 10:45:36', NULL, NUL
 
 
 
-DROP TABLE IF EXISTS `teachplan_media`;
+DROP TABLE IF EXISTS `teach_plan_media`;
 CREATE TABLE `teach_plan_media`
 (
     `id`              bigint                                   NOT NULL AUTO_INCREMENT COMMENT '主键',

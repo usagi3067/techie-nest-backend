@@ -1,14 +1,16 @@
 package com.dango.content.controller;
 
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
 
 /**
  * @author dango
@@ -18,8 +20,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class CoursePublishController {
 
-    @Autowired
+    @Resource
     private CoursePublishService coursePublishService;
+
+    @Resource
+    private CoursePublishPreService coursePublishPreService;
 
     // 处理课程预览页面请求
     @GetMapping("/coursepreview/{courseId}")
@@ -48,6 +53,9 @@ public class CoursePublishController {
     @PostMapping("/courseaudit/commit/{courseId}")
     public void commitAudit(@PathVariable("courseId") Long courseId) {
         // 提交审核逻辑
+        Long companyId = 1234L;
+        coursePublishPreService.commitAudit(companyId,courseId);
+
     }
 
 

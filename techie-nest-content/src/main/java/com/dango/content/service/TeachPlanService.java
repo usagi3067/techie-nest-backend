@@ -39,5 +39,5 @@ public interface TeachPlanService extends IService<TeachPlan> {
     void unAssociationMedia(Long teachPlanId, String mediaId);
 
     @Transactional
-    void deleteTeachPlan(Long teachplanId);
+    void deleteTeachPlan(Long teachPlanId);
 }
