@@ -1,5 +1,6 @@
 package com.dango.content.service.jobHandler;
 
+import com.dango.content.service.CoursePublishService;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MessageProcessAbstract;
 import com.dango.messagesdk.service.MqMessageService;
@@ -8,6 +9,8 @@ import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class CoursePublishTask extends MessageProcessAbstract {
+
+    @Resource
+    private CoursePublishService coursePublishService;
 
     @XxlJob("CoursePublishJobHandler")
     public void coursePublishJobHandler() throws Exception {
@@ -55,17 +61,21 @@ public class CoursePublishTask extends MessageProcessAbstract {
         MqMessageService mqMessageService = this.getMqMessageService();
         //消息幂等性处理
         int stageOne = mqMessageService.getStageOne(id);
-        if(stageOne >0){
+        if(stageOne == 1){
             log.debug("课程静态化已处理直接返回，课程id:{}",courseId);
             return ;
         }
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+        //生成静态化页面
+        File file = coursePublishService.generateCourseHtml(courseId);
+        //上传静态化页面
+        if(file!=null){
+            coursePublishService.uploadCourseHtml(courseId,file);
         }
         //保存第一阶段状态
         mqMessageService.completedStageOne(id);
+
+
 
     }
 

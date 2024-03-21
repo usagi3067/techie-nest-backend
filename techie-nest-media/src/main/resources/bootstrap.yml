@@ -33,7 +33,7 @@ xxl:
       port: 9999
       address:
       ip:
-      log-path: ./data/applogs/xxl-job/jobhandler
+      log-path: /Users/dango/Documents/code/techie-nest/xxl-job/data/app-logs/xxl-job/job-handler
       log-retention-days: 30
     accessToken: default_token
 mybatis-plus:

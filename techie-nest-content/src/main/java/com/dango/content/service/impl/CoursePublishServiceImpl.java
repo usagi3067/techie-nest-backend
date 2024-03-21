@@ -1,6 +1,8 @@
 package com.dango.content.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dango.content.config.MultipartSupportConfig;
+import com.dango.content.feignclient.MediaServiceClient;
 import com.dango.content.mapper.CourseBaseMapper;
 import com.dango.content.mapper.CoursePublishMapper;
 import com.dango.content.mapper.CoursePublishPreMapper;
@@ -17,12 +19,23 @@ import com.dango.exception.BusinessException;
 import com.dango.exception.CommonError;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MqMessageService;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author dango
@@ -30,6 +43,7 @@ import java.util.List;
 * @createDate 2024-03-20 09:15:15
 */
 @Service
+@Slf4j
 public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, CoursePublish>
     implements CoursePublishService{
 
@@ -47,6 +61,11 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
 
     @Resource
     private MqMessageService mqMessageService;
+
+    @Resource
+    private MediaServiceClient mediaServiceClient;
+
+
 
     /**
      * 获取课程预览信息
@@ -119,6 +138,61 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
 
         return coursePreviewDto;
     }
+    @Override
+    public File generateCourseHtml(Long courseId) {
+
+        //静态化文件
+        File htmlFile  = null;
+
+        try {
+            //配置freemarker
+            Configuration configuration = new Configuration(Configuration.getVersion());
+
+            //加载模板
+            //选指定模板路径,classpath下templates下
+            //得到classpath路径
+            String classpath = this.getClass().getResource("/").getPath();
+            configuration.setDirectoryForTemplateLoading(new File(classpath + "/templates/"));
+            //设置字符编码
+            configuration.setDefaultEncoding("utf-8");
+
+            //指定模板文件名称
+            Template template = configuration.getTemplate("course_template.ftl");
+
+            //准备数据
+            CoursePreviewDto coursePreviewInfo = this.getCoursePreviewInfo(courseId);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("model", coursePreviewInfo);
+
+            //静态化
+            //参数1：模板，参数2：数据模型
+            String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, map);
+            //将静态化内容输出到文件中
+            InputStream inputStream = IOUtils.toInputStream(content);
+            //创建静态化文件
+            htmlFile = File.createTempFile("course",".html");
+            log.debug("课程静态化，生成静态文件:{}",htmlFile.getAbsolutePath());
+            //输出流
+            FileOutputStream outputStream = new FileOutputStream(htmlFile);
+            IOUtils.copy(inputStream, outputStream);
+        } catch (Exception e) {
+            log.error("课程静态化异常:{}",e.toString());
+            throw new BusinessException("课程静态化异常");
+        }
+
+        return htmlFile;
+    }
+
+    @Override
+    public void uploadCourseHtml(Long courseId, File file) {
+        MultipartFile multipartFile = MultipartSupportConfig.getMultipartFile(file);
+        String course = mediaServiceClient.upload(multipartFile, "course/"+courseId+".html");
+        if(course==null){
+            throw new BusinessException("上传静态文件异常");
+        }
+    }
+
 
     /**
      * 保存课程发布信息
