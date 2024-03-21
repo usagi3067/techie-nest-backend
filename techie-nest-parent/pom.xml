@@ -11,6 +11,8 @@
         <module>../techie-nest-base</module>
         <module>../techie-nest-content</module>
         <module>../techie-nest-system</module>
+        <module>../techie-nest-media</module>
+        <module>../techie-nest-message-sdk</module>
     </modules>
     <version>1.0-SNAPSHOT</version>
     <name>techie-nest-parent</name>

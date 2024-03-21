@@ -3,6 +3,7 @@ package com.dango.content.controller;
 import com.dango.content.model.dto.CoursePreviewDto;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +58,16 @@ public class CoursePublishController {
         coursePublishPreService.commitAudit(companyId,courseId);
 
     }
+
+    @ApiOperation("课程发布")
+    @ResponseBody
+    @PostMapping ("/coursepublish/{courseId}")
+    public void coursepublish(@PathVariable("courseId") Long courseId){
+        Long companyId = 1234L;
+        coursePublishService.publish(companyId,courseId);
+
+    }
+
 
 
 }
