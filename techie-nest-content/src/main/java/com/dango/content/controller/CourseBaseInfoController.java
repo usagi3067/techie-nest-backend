@@ -6,6 +6,7 @@ import com.dango.content.model.dto.EditCourseDto;
 import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
+import com.dango.content.util.SecurityUtil;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
 import io.swagger.annotations.Api;
@@ -45,6 +46,8 @@ public class CourseBaseInfoController {
     @ApiOperation("根据课程id查询课程信息")
     @GetMapping("/course/{id}")
     public CourseBaseInfoDto getCourseBaseById(@PathVariable("id") Long id) {
+        SecurityUtil.User user = SecurityUtil.getUser();
+        log.info("user:{}", user);
         return courseBaseService.getCourseBaseInfo(id);
     }
 

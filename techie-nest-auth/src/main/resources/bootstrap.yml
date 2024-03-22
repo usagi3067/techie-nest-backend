@@ -1,8 +1,11 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   profiles:
     active: dev
   application:
-    name: gateway
+    name: auth
   cloud:
     nacos:
       server-addr: 127.0.0.1:8848
@@ -15,4 +18,3 @@ spring:
         file-extension: yml
   main:
     allow-circular-references: true
-

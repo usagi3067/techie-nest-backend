@@ -20,6 +20,8 @@ spring:
     circuitbreaker:
       hystrix:
         enabled: true
+  main:
+    allow-circular-references: true
 xxl:
   job:
     admin:
