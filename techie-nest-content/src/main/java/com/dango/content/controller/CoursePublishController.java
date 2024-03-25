@@ -1,10 +1,14 @@
 package com.dango.content.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CoursePublish;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author dango
@@ -76,6 +81,28 @@ public class CoursePublishController {
         //查询课程发布信息
         CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
         return coursePublish;
+    }
+
+
+    @ApiOperation("获取课程发布信息")
+    @ResponseBody
+    @GetMapping("/course/whole/{courseId}")
+    public CoursePreviewDto getCoursePublish(@PathVariable("courseId") Long courseId) {
+        //查询课程发布信息
+        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+        if (coursePublish == null) {
+            return new CoursePreviewDto();
+        }
+
+        //课程基本信息
+        CourseBaseInfoDto courseBase = new CourseBaseInfoDto();
+        BeanUtils.copyProperties(coursePublish, courseBase);
+        //课程计划
+        List<TeachPlanDto> teachplans = JSON.parseArray(coursePublish.getTeachPlan(), TeachPlanDto.class);
+        CoursePreviewDto coursePreviewInfo = new CoursePreviewDto();
+        coursePreviewInfo.setCourseBase(courseBase);
+        coursePreviewInfo.setTeachPlans(teachplans);
+        return coursePreviewInfo;
     }
 
 

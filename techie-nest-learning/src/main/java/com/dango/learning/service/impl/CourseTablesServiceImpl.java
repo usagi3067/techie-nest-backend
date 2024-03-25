@@ -12,6 +12,7 @@ import com.dango.learning.model.dto.CourseTablesDto;
 import com.dango.learning.model.entity.ChooseCourse;
 import com.dango.learning.model.entity.CourseTables;
 import com.dango.learning.service.CourseTablesService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,11 @@ import java.util.List;
  * @createDate 2024-03-23 21:28:52
  */
 @Service
+@Slf4j
 public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, CourseTables>
         implements CourseTablesService {
     @Autowired
-    ChooseCourseMapper ChooseCourseMapper;
+    ChooseCourseMapper chooseCourseMapper;
 
     @Autowired
     CourseTablesMapper CourseTablesMapper;
@@ -108,7 +110,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
                 .eq(ChooseCourse::getCourseId, coursepublish.getId())
                 .eq(ChooseCourse::getOrderType, "700002")//收费订单
                 .eq(ChooseCourse::getStatus, "701002");//待支付
-        List<ChooseCourse> ChooseCourses = ChooseCourseMapper.selectList(queryWrapper);
+        List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && ChooseCourses.size() > 0) {
             return ChooseCourses.get(0);
         }
@@ -129,7 +131,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
             chooseCourse.setValidDays(365);
         }
         chooseCourse.setValidTimeEnd(LocalDateTime.now().plusDays(chooseCourse.getValidDays()));
-        ChooseCourseMapper.insert(chooseCourse);
+        chooseCourseMapper.insert(chooseCourse);
         return chooseCourse;
 
     }
@@ -178,7 +180,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
                 .eq(ChooseCourse::getCourseId, coursepublish.getId())
                 .eq(ChooseCourse::getOrderType, "700001")//免费课程
                 .eq(ChooseCourse::getStatus, "701001");//选课成功
-        List<ChooseCourse> ChooseCourses = ChooseCourseMapper.selectList(queryWrapper);
+        List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && !ChooseCourses.isEmpty()) {
             return ChooseCourses.get(0);
         }
@@ -196,10 +198,38 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         ChooseCourse.setValidDays(365);//免费课程默认365
         ChooseCourse.setValidTimeStart(LocalDateTime.now());
         ChooseCourse.setValidTimeEnd(LocalDateTime.now().plusDays(365));
-        ChooseCourseMapper.insert(ChooseCourse);
+        chooseCourseMapper.insert(ChooseCourse);
 
         return ChooseCourse;
 
+    }
+
+    @Override
+    public boolean saveChooseCourseSuccess(String chooseCourseId) {
+
+        //根据选课id查询选课表
+        ChooseCourse chooseCourse = chooseCourseMapper.selectById(chooseCourseId);
+        if(chooseCourse == null){
+            log.debug("接收购买课程的消息，根据选课id从数据库找不到选课记录,选课id:{}",chooseCourseId);
+            return false;
+        }
+        //选课状态
+        String status = chooseCourse.getStatus();
+        //只有当未支付时才更新为已支付
+        if("701002".equals(status)){
+            //更新选课记录的状态为支付成功
+            chooseCourse.setStatus("701001");
+            int i = chooseCourseMapper.updateById(chooseCourse);
+            if(i<=0){
+                log.debug("添加选课记录失败:{}",chooseCourse);
+                throw new BusinessException("添加选课记录失败");
+            }
+
+            //向我的课程表插入记录
+            CourseTables xcCourseTables = addCourseTables(chooseCourse);
+            return true;
+        }
+        return false;
     }
 }
 

@@ -29,4 +29,5 @@ public interface CourseTablesService extends IService<CourseTables> {
      */
     public CourseTablesDto getLearningStatus(String userId, Long courseId);
 
+    boolean saveChooseCourseSuccess(String chooseCourseId);
 }

@@ -1,9 +1,12 @@
 package com.dango.learning.controller;
 
+import com.dango.learning.service.LearningService;
+import com.dango.learning.util.SecurityUtil;
 import com.dango.model.RestResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +22,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MyLearningController {
 
+    @Autowired
+    LearningService learningService;
+
 
     @ApiOperation("获取视频")
     @GetMapping("/open/learn/getvideo/{courseId}/{teachPlanId}/{mediaId}")
     public RestResponse<String> getvideo(@PathVariable("courseId") Long courseId, @PathVariable("teachPlanId") Long teachPlanId, @PathVariable("mediaId") String mediaId) {
+        SecurityUtil.User user = SecurityUtil.getUser();
 
-        return null;
+        String userId = user.getId();
+
+        //获取视频
+        RestResponse<String> restResponse = learningService.getVideo(userId, courseId, teachPlanId, mediaId);
+
+        return restResponse;
 
     }
 

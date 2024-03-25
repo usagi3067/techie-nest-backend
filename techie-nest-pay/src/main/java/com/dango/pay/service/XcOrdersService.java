@@ -1,6 +1,7 @@
 package com.dango.pay.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.pay.domain.dto.AddOrderDto;
 import com.dango.pay.domain.dto.PayRecordDto;
 import com.dango.pay.domain.dto.PayStatusDto;
@@ -49,5 +50,12 @@ public interface XcOrdersService extends IService<XcOrders> {
      * @date 2022/10/4 16:52
      */
     public void saveAliPayStatus(PayStatusDto payStatusDto) ;
+
+    /**
+     * 发送通知结果
+     * @param message
+     */
+    public void notifyPayResult(MqMessage message);
+
 
 }
