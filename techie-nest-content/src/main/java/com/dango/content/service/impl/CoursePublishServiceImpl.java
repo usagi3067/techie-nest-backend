@@ -193,6 +193,12 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
         }
     }
 
+    public CoursePublish getCoursePublish(Long courseId){
+        CoursePublish coursePublish = baseMapper.selectById(courseId);
+        return coursePublish ;
+    }
+
+
 
     /**
      * 保存课程发布信息

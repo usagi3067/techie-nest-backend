@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.ChooseCourseMapper">
+
+    <resultMap id="BaseResultMap" type="generator.domain.ChooseCourse">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="courseId" column="course_id" jdbcType="BIGINT"/>
+            <result property="courseName" column="course_name" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="companyId" column="company_id" jdbcType="BIGINT"/>
+            <result property="orderType" column="order_type" jdbcType="VARCHAR"/>
+            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+            <result property="coursePrice" column="course_price" jdbcType="FLOAT"/>
+            <result property="validDays" column="valid_days" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="validTimeStart" column="valid_time_start" jdbcType="TIMESTAMP"/>
+            <result property="validTimeEnd" column="valid_time_end" jdbcType="TIMESTAMP"/>
+            <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,course_id,course_name,
+        user_id,company_id,order_type,
+        create_date,course_price,valid_days,
+        status,valid_time_start,valid_time_end,
+        remarks
+    </sql>
+</mapper>

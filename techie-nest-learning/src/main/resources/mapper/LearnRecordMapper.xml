@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dango.learning.mapper.LearnRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.dango.learning.model.entity.LearnRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="courseId" column="course_id" jdbcType="BIGINT"/>
+            <result property="courseName" column="course_name" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="learnDate" column="learn_date" jdbcType="TIMESTAMP"/>
+            <result property="learnLength" column="learn_length" jdbcType="BIGINT"/>
+            <result property="teachPlanId" column="teach_plan_id" jdbcType="BIGINT"/>
+            <result property="teachPlanName" column="teach_plan_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,course_id,course_name,
+        user_id,learn_date,learn_length,
+        teach_plan_id,teach_plan_name
+    </sql>
+</mapper>

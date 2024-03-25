@@ -2,10 +2,10 @@ package com.dango.content.feignclient;
 
 import com.dango.content.config.MultipartSupportConfig;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.io.File;
 
 /**
@@ -16,7 +16,7 @@ import java.io.File;
 @SpringBootTest
 public class MediaServiceClientTest {
 
-    @Resource
+    @Autowired
     MediaServiceClient mediaServiceClient;
 
     //远程调用，上传文件

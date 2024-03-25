@@ -66,10 +66,10 @@ public class CourseBaseInfoDto {
     private String charge;
 
     @ApiModelProperty("课程价格")
-    private Float price;
+    private Double price;
 
     @ApiModelProperty("课程原价")
-    private Float originalPrice;
+    private Double originalPrice;
 
     @ApiModelProperty("qq")
     private String qq;

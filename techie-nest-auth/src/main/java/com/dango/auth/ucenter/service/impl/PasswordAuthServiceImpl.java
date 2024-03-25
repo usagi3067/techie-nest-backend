@@ -1,6 +1,7 @@
 package com.dango.auth.ucenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.dango.auth.ucenter.feignclient.CheckCodeClient;
 import com.dango.auth.ucenter.mapper.UserMapper;
 import com.dango.auth.ucenter.model.dto.AuthParamsDto;
 import com.dango.auth.ucenter.model.dto.UserExt;
@@ -23,9 +24,26 @@ public class PasswordAuthServiceImpl implements AuthService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    CheckCodeClient checkCodeClient;
+
 
     @Override
     public UserExt execute(AuthParamsDto authParamsDto) {
+//        //校验验证码
+//        String checkcode = authParamsDto.getCheckcode();
+//        String checkcodekey = authParamsDto.getCheckcodekey();
+//
+//        if(StringUtils.isBlank(checkcodekey) || StringUtils.isBlank(checkcode)){
+//            throw new RuntimeException("验证码为空");
+//
+//        }
+//        Boolean verify = checkCodeClient.verify(checkcodekey, checkcode);
+//        if(!verify){
+//            throw new RuntimeException("验证码输入错误");
+//        }
+
+
         //账号
         String username = authParamsDto.getUsername();
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username));

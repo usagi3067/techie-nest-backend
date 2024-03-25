@@ -1,6 +1,7 @@
 package com.dango.content.controller;
 
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.model.entity.CoursePublish;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
 import io.swagger.annotations.ApiOperation;
@@ -66,6 +67,15 @@ public class CoursePublishController {
         Long companyId = 1234L;
         coursePublishService.publish(companyId,courseId);
 
+    }
+
+    @ApiOperation("查询课程发布信息")
+    @ResponseBody
+    @GetMapping("/r/coursepublish/{courseId}")
+    public CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId) {
+        //查询课程发布信息
+        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
+        return coursePublish;
     }
 
 

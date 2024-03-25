@@ -138,7 +138,6 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         // 封装课程营销信息
         CourseMarket courseMarket = new CourseMarket();
         BeanUtils.copyProperties(dto, courseMarket);
-
         // 保存课程营销信息
         saveCourseMarket(courseMarket);
 

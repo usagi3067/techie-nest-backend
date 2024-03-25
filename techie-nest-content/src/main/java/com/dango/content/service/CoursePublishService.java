@@ -54,4 +54,6 @@ public interface CoursePublishService extends IService<CoursePublish> {
      * @date 2024-03-21
      */
     public void  uploadCourseHtml(Long courseId, File file);
+
+    CoursePublish getCoursePublish(Long courseId);
 }

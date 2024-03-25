@@ -18,7 +18,7 @@ public interface CourseSearchService {
      * @description 搜索课程列表
      * @param pageParams 分页参数
      * @param searchCourseParamDto 搜索条件
-     * @return com.xuecheng.base.model.PageResult<com.xuecheng.search.po.CourseIndex> 课程列表
+     * @return com.dango.base.model.PageResult<com.dango.search.po.CourseIndex> 课程列表
      * @author Mr.M
      * @date 2022/9/24 22:45
     */

@@ -1,11 +1,15 @@
 package com.dango.content.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 /**
  * @author Administrator
@@ -14,24 +18,21 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 public class TokenConfig {
 
-    String SIGNING_KEY = "mq123";
-
-
-
-    @Autowired
-    private JwtAccessTokenConverter accessTokenConverter;
+    String SIGNING_KEY = "lwWjCaEtQghgOk7Hb/l1h6ncwXCkVFes7zGS8jObknM=";
 
     @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
+    public JwtDecoder jwtDecoder() {
+        SecretKey secretKey = new SecretKeySpec(SIGNING_KEY.getBytes(StandardCharsets.UTF_8), "HMACSHA256");
+        return NimbusJwtDecoder.withSecretKey(secretKey).build();
     }
 
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(SIGNING_KEY);
-        return converter;
-    }
 
+    public static void main(String[] args) {
+        SecureRandom random = new SecureRandom();
+        byte[] key = new byte[32]; // 256 bits are equal to 32 bytes.
+        random.nextBytes(key);
+        String encodedKey = Base64.getEncoder().encodeToString(key);
+        System.out.println("Secure Key: " + encodedKey);
+    }
 
 }

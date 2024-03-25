@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: learning
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      discovery:
+        namespace: dev
+        group: techie-nest-backend
+      config:
+        namespace: dev
+        group: techie-nest-backend
+        file-extension: yml
+  main:
+    allow-circular-references: true
