@@ -1,4 +1,5 @@
 ## 无论是否收费， 添加选课都要插入该记录。
+DROP TABLE IF EXISTS choose_course;
 create table choose_course
 (
     id               bigint auto_increment comment '主键'
@@ -7,7 +8,8 @@ create table choose_course
     course_name      varchar(32)  not null comment '课程名称',
     user_id          varchar(32)  not null comment '用户id',
     company_id       bigint       not null comment '机构id',
-    order_type       varchar(32)  not null comment '选课类型 700001:免费， 700002:收费',
+    order_type       varchar(32)  not null comment '选课类型 700001:免费 700002:收费',
+    pic            varchar(500)            not null comment '课程图片',
     create_date      datetime     not null comment '添加时间',
     course_price     float(10, 2) not null comment '课程价格',
     valid_days       int          not null comment '课程有效期(天)',

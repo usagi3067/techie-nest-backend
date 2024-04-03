@@ -53,6 +53,12 @@ public class ChooseCourse implements Serializable {
     private String orderType;
 
     /**
+     * 课程图片
+     */
+    @TableField(value = "pic")
+    private String pic;
+
+    /**
      * 添加时间
      */
     @TableField(value = "create_date")

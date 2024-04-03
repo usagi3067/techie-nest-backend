@@ -1,8 +1,10 @@
 package com.dango.search.controller;
 
 import com.dango.exception.BusinessException;
+import com.dango.model.BaseResponse;
 import com.dango.search.po.CourseIndex;
 import com.dango.search.service.IndexService;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ public class CourseIndexController {
 
     @ApiOperation("添加课程索引")
     @PostMapping("/index/course")
-    public Boolean add(@RequestBody CourseIndex courseIndex) {
+    public BaseResponse<Boolean> add(@RequestBody CourseIndex courseIndex) {
 
         Long id = courseIndex.getId();
         if(id==null){
@@ -39,7 +41,7 @@ public class CourseIndexController {
         if(!result){
             throw new BusinessException("添加课程索引失败");
         }
-        return result;
+        return ResultUtils.success(result);
 
     }
 }

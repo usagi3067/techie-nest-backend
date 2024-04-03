@@ -109,7 +109,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.dango.media.TechieNestMediaApplication</mainClass>
+                    <mainClass>com.dango.TechieNestMediaApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>

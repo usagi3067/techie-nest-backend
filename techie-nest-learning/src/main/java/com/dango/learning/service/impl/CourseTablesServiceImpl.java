@@ -1,6 +1,7 @@
 package com.dango.learning.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.exception.BusinessException;
 import com.dango.learning.feignclient.ContentServiceClient;
@@ -9,9 +10,13 @@ import com.dango.learning.mapper.CourseTablesMapper;
 import com.dango.learning.model.dto.ChooseCourseDto;
 import com.dango.learning.model.dto.CoursePublish;
 import com.dango.learning.model.dto.CourseTablesDto;
+import com.dango.learning.model.dto.MyCourseTableParams;
 import com.dango.learning.model.entity.ChooseCourse;
 import com.dango.learning.model.entity.CourseTables;
 import com.dango.learning.service.CourseTablesService;
+import com.dango.model.BaseResponse;
+import com.dango.model.PageResult;
+import com.dango.model.state.CourseFeeStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +32,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, CourseTables>
-        implements CourseTablesService {
+public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, CourseTables> implements CourseTablesService {
     @Autowired
     ChooseCourseMapper chooseCourseMapper;
 
@@ -48,19 +52,22 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
     @Override
     public ChooseCourseDto addChooseCourse(String userId, Long courseId) {
         //查询课程信息
-        CoursePublish coursepublish = contentServiceClient.getCoursepublish(courseId);
+        BaseResponse<CoursePublish> coursePublishBaseResponse = contentServiceClient.getCoursepublish(courseId);
+        if (coursePublishBaseResponse.getCode() != 0)
+            throw new BusinessException("没有相关课程发布记录");
+        CoursePublish coursePublish = coursePublishBaseResponse.getData();
         //课程收费标准
-        String charge = coursepublish.getCharge();
+        String charge = coursePublish.getCharge();
         //选课记录
         ChooseCourse chooseCourse = null;
-        if ("201000".equals(charge)) {//课程免费
+        if (CourseFeeStatus.FREE.getCode().equals(charge)) {//课程免费
             //添加免费课程
-            chooseCourse = addFreeCoruse(userId, coursepublish);
+            chooseCourse = addFreeCoruse(userId, coursePublish);
             //添加到我的课程表
             CourseTables courseTables = addCourseTables(chooseCourse);
         } else {
             //添加收费课程
-            chooseCourse = addChargeCourse(userId, coursepublish);
+            chooseCourse = addChargeCourse(userId, coursePublish);
         }
         //获取学习资格
         ChooseCourseDto chooseCourseDto = new ChooseCourseDto();
@@ -106,9 +113,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
 
         //如果存在待支付交易记录直接返回
         LambdaQueryWrapper<ChooseCourse> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId)
-                .eq(ChooseCourse::getCourseId, coursepublish.getId())
-                .eq(ChooseCourse::getOrderType, "700002")//收费订单
+        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getOrderType, "700002")//收费订单
                 .eq(ChooseCourse::getStatus, "701002");//待支付
         List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && ChooseCourses.size() > 0) {
@@ -130,6 +135,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         if (coursepublish.getValidDays() == null) {
             chooseCourse.setValidDays(365);
         }
+        chooseCourse.setPic(coursepublish.getPic());
         chooseCourse.setValidTimeEnd(LocalDateTime.now().plusDays(chooseCourse.getValidDays()));
         chooseCourseMapper.insert(chooseCourse);
         return chooseCourse;
@@ -137,9 +143,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
     }
 
     public CourseTables getCourseTables(String userId, Long courseId) {
-        LambdaQueryWrapper<CourseTables> queryWrapper = new LambdaQueryWrapper<CourseTables>()
-                .eq(CourseTables::getUserId, userId)
-                .eq(CourseTables::getCourseId, courseId);
+        LambdaQueryWrapper<CourseTables> queryWrapper = new LambdaQueryWrapper<CourseTables>().eq(CourseTables::getUserId, userId).eq(CourseTables::getCourseId, courseId);
         CourseTables CourseTables = CourseTablesMapper.selectOne(queryWrapper);
         return CourseTables;
 
@@ -164,6 +168,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         CourseTablesNew.setCompanyId(chooseCourse.getCompanyId());
         CourseTablesNew.setCourseName(chooseCourse.getCourseName());
         CourseTablesNew.setCreateDate(LocalDateTime.now());
+        CourseTablesNew.setPic(chooseCourse.getPic());
         CourseTablesNew.setValidTimeStart(chooseCourse.getValidTimeStart());
         CourseTablesNew.setValidTimeEnd(chooseCourse.getValidTimeEnd());
         CourseTablesNew.setCourseType(chooseCourse.getOrderType());
@@ -176,9 +181,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
     private ChooseCourse addFreeCoruse(String userId, CoursePublish coursepublish) {
         //查询选课记录表是否存在免费的且选课成功的订单
         LambdaQueryWrapper<ChooseCourse> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId)
-                .eq(ChooseCourse::getCourseId, coursepublish.getId())
-                .eq(ChooseCourse::getOrderType, "700001")//免费课程
+        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getOrderType, "700001")//免费课程
                 .eq(ChooseCourse::getStatus, "701001");//选课成功
         List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && !ChooseCourses.isEmpty()) {
@@ -209,19 +212,19 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
 
         //根据选课id查询选课表
         ChooseCourse chooseCourse = chooseCourseMapper.selectById(chooseCourseId);
-        if(chooseCourse == null){
-            log.debug("接收购买课程的消息，根据选课id从数据库找不到选课记录,选课id:{}",chooseCourseId);
+        if (chooseCourse == null) {
+            log.debug("接收购买课程的消息，根据选课id从数据库找不到选课记录,选课id:{}", chooseCourseId);
             return false;
         }
         //选课状态
         String status = chooseCourse.getStatus();
         //只有当未支付时才更新为已支付
-        if("701002".equals(status)){
+        if ("701002".equals(status)) {
             //更新选课记录的状态为支付成功
             chooseCourse.setStatus("701001");
             int i = chooseCourseMapper.updateById(chooseCourse);
-            if(i<=0){
-                log.debug("添加选课记录失败:{}",chooseCourse);
+            if (i <= 0) {
+                log.debug("添加选课记录失败:{}", chooseCourse);
                 throw new BusinessException("添加选课记录失败");
             }
 
@@ -230,6 +233,29 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
             return true;
         }
         return false;
+    }
+
+    @Override
+    public PageResult<CourseTables> myCourseTables(MyCourseTableParams params) {
+
+        //页码
+        int pageNo = params.getPage();
+        //每页记录数,固定为4
+        int pageSize = 4;
+        //分页条件
+        Page<CourseTables> page = new Page<>(pageNo, pageSize);
+        //根据用户id查询
+        String userId = params.getUserId();
+        LambdaQueryWrapper<CourseTables> lambdaQueryWrapper = new LambdaQueryWrapper<CourseTables>().eq(CourseTables::getUserId, userId);
+
+        //分页查询
+        Page<CourseTables> pageResult = baseMapper.selectPage(page, lambdaQueryWrapper);
+        List<CourseTables> records = pageResult.getRecords();
+        //记录总数
+        long total = pageResult.getTotal();
+        PageResult<CourseTables> courseTablesResult = new PageResult<>(records, total, pageNo, pageSize);
+        return courseTablesResult;
+
     }
 }
 

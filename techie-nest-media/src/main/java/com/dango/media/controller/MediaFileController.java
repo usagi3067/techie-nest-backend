@@ -5,8 +5,11 @@ import com.dango.media.model.dto.UploadFileParamsDto;
 import com.dango.media.model.dto.UploadFileResultDto;
 import com.dango.media.model.entity.MediaFiles;
 import com.dango.media.service.MediaFilesService;
+import com.dango.model.BaseResponse;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
+import com.dango.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +25,7 @@ import java.io.IOException;
  * @date 2024-03-12
  */
 @RestController
-
+@Api(tags = " 媒资文件接口", value = "媒资文件接口")
 public class MediaFileController {
 
     @Resource
@@ -30,14 +33,15 @@ public class MediaFileController {
 
     @ApiOperation("媒资列表查询接口")
     @PostMapping("/files")
-    public PageResult<MediaFiles> list(PageParams pageParams, @RequestBody QueryMediaParamsDto queryMediaParamsDto){
+    public BaseResponse<PageResult<MediaFiles>> list(PageParams pageParams, @RequestBody QueryMediaParamsDto queryMediaParamsDto){
         Long companyId = 1234L;
-        return mediaFileService.queryMediaFiles(companyId,pageParams,queryMediaParamsDto);
+        PageResult<MediaFiles> mediaFilesPageResult = mediaFileService.queryMediaFiles(companyId, pageParams, queryMediaParamsDto);
+        return ResultUtils.success(mediaFilesPageResult);
     }
 
     @ApiOperation("上传文件")
     @RequestMapping(value = "/upload/course-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UploadFileResultDto upload(@RequestPart("file-data") MultipartFile upload,
+    public BaseResponse<UploadFileResultDto> upload(@RequestPart("file-data") MultipartFile upload,
                                       @RequestParam(value = "folder", required = false) String folder,
                                       @RequestParam(value = "objectName", required = false) String objectName) throws IOException {
         Long companyId = 1234L;
@@ -58,7 +62,8 @@ public class MediaFileController {
         //文件路径
         String absolutePath = tempFile.getAbsolutePath();
         //上传文件
-        return mediaFileService.uploadFile(companyId, uploadFileParamsDto, absolutePath, objectName);
+        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, absolutePath, objectName);
+        return ResultUtils.success(uploadFileResultDto);
     }
 
 }

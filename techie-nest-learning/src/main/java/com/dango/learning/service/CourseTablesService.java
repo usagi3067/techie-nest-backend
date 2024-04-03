@@ -3,7 +3,9 @@ package com.dango.learning.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dango.learning.model.dto.ChooseCourseDto;
 import com.dango.learning.model.dto.CourseTablesDto;
+import com.dango.learning.model.dto.MyCourseTableParams;
 import com.dango.learning.model.entity.CourseTables;
+import com.dango.model.PageResult;
 
 /**
 * @author dango
@@ -30,4 +32,6 @@ public interface CourseTablesService extends IService<CourseTables> {
     public CourseTablesDto getLearningStatus(String userId, Long courseId);
 
     boolean saveChooseCourseSuccess(String chooseCourseId);
+
+    PageResult<CourseTables> myCourseTables(MyCourseTableParams params);
 }

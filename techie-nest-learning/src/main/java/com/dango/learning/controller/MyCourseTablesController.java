@@ -8,7 +8,10 @@ import com.dango.learning.model.dto.MyCourseTableParams;
 import com.dango.learning.model.entity.CourseTables;
 import com.dango.learning.service.CourseTablesService;
 import com.dango.learning.util.SecurityUtil;
+import com.dango.model.BaseResponse;
+import com.dango.model.ErrorCode;
 import com.dango.model.PageResult;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -35,35 +38,46 @@ public class MyCourseTablesController {
 
     @ApiOperation("添加选课")
     @PostMapping("/choosecourse/{courseId}")
-    public ChooseCourseDto addChooseCourse(@PathVariable("courseId") Long courseId) {
+    public BaseResponse<ChooseCourseDto> addChooseCourse(@PathVariable("courseId") Long courseId) {
         //登录用户
         SecurityUtil.User user = SecurityUtil.getUser();
-        if(user == null){
+        if (user == null) {
             throw new BusinessException("请登录后继续选课");
         }
         String userId = user.getId();
-        return  courseTablesService.addChooseCourse(userId, courseId);
+        ChooseCourseDto chooseCourseDto = courseTablesService.addChooseCourse(userId, courseId);
+        return ResultUtils.success(chooseCourseDto);
 
     }
 
     @ApiOperation("查询学习资格")
     @PostMapping("/choosecourse/learnstatus/{courseId}")
-    public CourseTablesDto getLearningStatus(@PathVariable("courseId") Long courseId) {
+    public BaseResponse<CourseTablesDto> getLearningStatus(@PathVariable("courseId") Long courseId) {
         //登录用户
         SecurityUtil.User user = SecurityUtil.getUser();
-        if(user == null){
-            throw new BusinessException("请登录后继续选课");
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         String userId = user.getId();
-        return  courseTablesService.getLearningStatus(userId, courseId);
-
-
+        CourseTablesDto learningStatus = courseTablesService.getLearningStatus(userId, courseId);
+        return ResultUtils.success(learningStatus);
     }
 
     @ApiOperation("我的课程表")
     @GetMapping("/mycoursetable")
-    public PageResult<CourseTables> mycoursetable(MyCourseTableParams params) {
-        return null;
+    public BaseResponse<PageResult<CourseTables>> mycoursetable(MyCourseTableParams params) {
+        //登录用户
+        SecurityUtil.User user = SecurityUtil.getUser();
+        if (user == null) {
+            throw new BusinessException("请登录后继续选课");
+        }
+        String userId = user.getId();
+//设置当前的登录用户
+        params.setUserId(userId);
+
+        PageResult<CourseTables> courseTablesPageResult = courseTablesService.myCourseTables(params);
+        return ResultUtils.success(courseTablesPageResult);
+
     }
 
 }

@@ -14,24 +14,26 @@ import com.dango.content.service.CourseBaseService;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.TeachPlanService;
 import com.dango.exception.BusinessException;
+import com.dango.model.state.CourseAuditStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
-* @author dango
-* @description 针对表【course_publish_pre(课程发布)】的数据库操作Service实现
-* @createDate 2024-03-20 16:49:35
-*/
+ * @author dango
+ * @description 针对表【course_publish_pre(课程发布)】的数据库操作Service实现
+ * @createDate 2024-03-20 16:49:35
+ */
 @Service
 public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMapper, CoursePublishPre>
-    implements CoursePublishPreService{
-    
-    @Resource 
+        implements CoursePublishPreService {
+
+    @Resource
     private CourseBaseMapper courseBaseMapper;
 
     @Resource
@@ -59,7 +61,7 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         String auditStatus = courseBase.getAuditStatus();
 
         // 如果当前审核状态为已提交，则不允许再次提交
-        if ("202003".equals(auditStatus)) {
+        if (CourseAuditStatus.SUBMITTED.getCode().equals(auditStatus)) {
             throw new BusinessException("当前为等待审核状态，审核完成可以再次提交。");
         }
 
@@ -100,7 +102,7 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         coursePublishPre.setTeachPlan(teachplanTreeString);
 
         // 设置预发布记录状态为已提交
-        coursePublishPre.setStatus("202003");
+        coursePublishPre.setStatus(CourseAuditStatus.SUBMITTED.getCode());
 
         // 设置教学机构id
         coursePublishPre.setCompanyId(companyId);
@@ -118,8 +120,51 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         }
 
         // 更新课程基本表的审核状态
-        courseBase.setAuditStatus("202003");
+        courseBase.setAuditStatus(CourseAuditStatus.SUBMITTED.getCode());
         courseBaseMapper.updateById(courseBase);
+    }
+
+    @Transactional
+    @Override
+    public void commitAuditSuccess(Long courseId) {
+        // 查询课程基本信息
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+
+        // 获取课程审核状态
+        String auditStatus = courseBase.getAuditStatus();
+
+        if (!CourseAuditStatus.SUBMITTED.getCode().equals(auditStatus))
+            throw new BusinessException("当前课程并未提交");
+
+        courseBase.setAuditStatus(CourseAuditStatus.APPROVED.getCode());
+        courseBaseMapper.updateById(courseBase);
+
+        CoursePublishPre coursePublishPre = baseMapper.selectById(courseId);
+        coursePublishPre.setAuditDate(LocalDateTime.now());
+        coursePublishPre.setStatus(CourseAuditStatus.APPROVED.getCode());
+        baseMapper.updateById(coursePublishPre);
+    }
+
+    @Transactional
+    @Override
+    public void commitAuditFail(Long courseId, String content) {
+        // 查询课程基本信息
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+
+        // 获取课程审核状态
+        String auditStatus = courseBase.getAuditStatus();
+
+        if (!CourseAuditStatus.SUBMITTED.getCode().equals(auditStatus))
+            throw new BusinessException("当前课程并未提交");
+        // todo 补充审核意见
+        courseBase.setAuditStatus(CourseAuditStatus.REJECTED.getCode());
+        courseBaseMapper.updateById(courseBase);
+
+        CoursePublishPre coursePublishPre = baseMapper.selectById(courseId);
+        coursePublishPre.setAuditDate(LocalDateTime.now());
+        coursePublishPre.setStatus(CourseAuditStatus.REJECTED.getCode());
+        baseMapper.updateById(coursePublishPre);
+
     }
 }
 

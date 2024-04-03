@@ -3,7 +3,8 @@ package com.dango.media.controller;
 import com.dango.exception.BusinessException;
 import com.dango.media.model.entity.MediaFiles;
 import com.dango.media.service.MediaFilesService;
-import com.dango.model.RestResponse;
+import com.dango.model.BaseResponse;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -34,11 +35,11 @@ public class MediaOpenController {
      */
     @ApiOperation("预览文件")
     @GetMapping("/preview/{mediaId}")
-    public RestResponse<String> getPlayUrlByMediaId(@PathVariable String mediaId) {
+    public BaseResponse<String> getPlayUrlByMediaId(@PathVariable String mediaId) {
         MediaFiles mediaFiles = mediaFilesService.getFileById(mediaId);
         if (mediaFiles == null || StringUtils.isEmpty(mediaFiles.getUrl())) {
             throw new BusinessException("视频还没有转码处理");
         }
-        return RestResponse.success(mediaFiles.getUrl());
+        return ResultUtils.success(mediaFiles.getUrl());
     }
 }

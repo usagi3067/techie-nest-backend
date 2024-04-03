@@ -14,7 +14,6 @@ import com.dango.media.model.entity.MediaProcess;
 import com.dango.media.service.MediaFilesService;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
-import com.dango.model.RestResponse;
 import com.j256.simplemagic.ContentInfo;
 import com.j256.simplemagic.ContentInfoUtil;
 import io.minio.*;
@@ -267,7 +266,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     }
 
     @Override
-    public RestResponse<Boolean> checkFile(String fileMd5) {
+    public Boolean checkFile(String fileMd5) {
         // 查询文件信息
         MediaFiles mediaFiles = baseMapper.selectById(fileMd5);
         if (mediaFiles != null) {
@@ -280,18 +279,18 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
                                 .build());
                 // 如果能够获取到文件流，则文件已存在
                 if (stream != null) {
-                    return RestResponse.success(true);
+                    return true;
                 }
             } catch (Exception e) {
                 // 日志记录异常，忽略处理以返回文件不存在的结果
             }
         }
         // 文件不存在
-        return RestResponse.success(false);
+        return false;
     }
 
     @Override
-    public RestResponse<Boolean> checkChunk(String fileMd5, int chunkIndex) {
+    public Boolean checkChunk(String fileMd5, int chunkIndex) {
         // 构造分块文件的路径
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
         String chunkFilePath = chunkFileFolderPath + chunkIndex;
@@ -304,17 +303,17 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
                             .build());
             // 如果能够获取到文件流，则分块已存在
             if (fileInputStream != null) {
-                return RestResponse.success(true);
+                return true;
             }
         } catch (Exception e) {
             // 日志记录异常，忽略处理以返回分块不存在的结果
         }
         // 分块不存在
-        return RestResponse.success(false);
+        return false;
     }
 
     @Override
-    public RestResponse<Boolean> uploadChunk(String fileMd5, int chunk, String localChunkFilePath) {
+    public Boolean uploadChunk(String fileMd5, int chunk, String localChunkFilePath) {
         //得到分块文件的目录路径
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
         //得到分块文件的路径
@@ -325,14 +324,14 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
         boolean b = addMediaFilesToMinIO(localChunkFilePath, mimeType, bucketVideoFiles, chunkFilePath);
         if (!b) {
             log.debug("上传分块文件失败:{}", chunkFilePath);
-            return RestResponse.validfail(false, "上传分块失败");
+            throw new BusinessException("上传分块失败");
         }
         log.debug("上传分块文件成功:{}", chunkFilePath);
-        return RestResponse.success(true);
+        return true;
     }
 
     @Override
-    public RestResponse<Boolean> mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto) {
+    public Boolean mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto) {
         //分块文件所在目录
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
         //找到所有的分块文件
@@ -356,7 +355,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
         } catch (Exception e) {
             e.printStackTrace();
             log.error("合并文件出错,bucket:{},objectName:{},错误信息:{}", bucketVideoFiles, objectName, e.getMessage());
-            return RestResponse.validfail(false, "合并文件异常");
+            throw new BusinessException("合并文件异常");
         }
 
         //===========校验合并后的和源文件是否一致，视频上传才成功===========
@@ -368,24 +367,24 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
             //比较原始md5和合并后文件的md5
             if (!fileMd5.equals(mergeFile_md5)) {
                 log.error("校验合并文件md5值不一致,原始文件:{},合并文件:{}", fileMd5, mergeFile_md5);
-                return RestResponse.validfail(false, "文件校验失败");
+                throw new BusinessException("文件校验失败");
             }
             //文件大小
             uploadFileParamsDto.setFileSize(file.length());
         } catch (Exception e) {
-            return RestResponse.validfail(false, "文件校验失败");
+            throw new BusinessException("文件校验失败");
         }
 
         //==============将文件信息入库============
         MediaFiles mediaFiles = currentProxy.addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucketVideoFiles, objectName);
         if (mediaFiles == null) {
-            return RestResponse.validfail(false, "文件入库失败");
+            throw new BusinessException("文件入库失败");
         }
         //==========清理分块文件=========
         clearChunkFiles(chunkFileFolderPath, chunkTotal);
 
 
-        return RestResponse.success(true);
+        return true;
     }
 
     /**

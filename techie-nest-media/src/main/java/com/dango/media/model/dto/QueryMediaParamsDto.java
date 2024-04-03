@@ -10,7 +10,7 @@ import lombok.Data;
  * @date
  */
 @Data
-@ApiModel("媒资文件查询请求模型类")
+@ApiModel(value="QueryMediaParamsDto", description="媒资文件查询请求模型类")
 public class QueryMediaParamsDto {
     @ApiModelProperty("媒资文件名称")
     private String filename;

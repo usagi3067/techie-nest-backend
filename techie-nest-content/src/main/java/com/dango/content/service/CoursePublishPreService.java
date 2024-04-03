@@ -16,4 +16,8 @@ public interface CoursePublishPreService extends IService<CoursePublishPre> {
      * @param courseId  课程ID
      */
     void commitAudit(Long companyId, Long courseId);
+
+    void commitAuditSuccess(Long courseId);
+
+    void commitAuditFail( Long courseId, String content);
 }

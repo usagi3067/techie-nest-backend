@@ -18,6 +18,6 @@ public interface LearningService {
      * @author Mr.M
      * @date 2022/10/5 9:08
      */
-    public RestResponse<String> getVideo(String userId, Long courseId, Long teachplanId, String mediaId);
+    public String getVideo(String userId, Long courseId, Long teachplanId, String mediaId);
 
 }

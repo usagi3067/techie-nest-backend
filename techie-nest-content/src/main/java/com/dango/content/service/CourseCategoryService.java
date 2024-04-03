@@ -1,5 +1,6 @@
 package com.dango.content.service;
 
+import com.dango.content.model.dto.CourseCategoryMenuDto;
 import com.dango.content.model.dto.CourseCategoryTreeDto;
 import com.dango.content.model.entity.CourseCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -19,4 +20,12 @@ public interface CourseCategoryService extends IService<CourseCategory> {
      * @return 课程分类树形结构
      */
     List<CourseCategoryTreeDto> queryTreeNodes(String id);
+
+    /**
+     * 查询所有大分类
+     * @return
+     */
+    List<CourseCategoryMenuDto> getAllMt();
+
+    List<CourseCategoryMenuDto> getAllSt(String id);
 }

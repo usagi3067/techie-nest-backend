@@ -99,8 +99,6 @@ public class CoursePublishTask extends MessageProcessAbstract {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-
     }
     //保存课程索引信息
     public void saveCourseIndex(MqMessage mqMessage,long courseId){

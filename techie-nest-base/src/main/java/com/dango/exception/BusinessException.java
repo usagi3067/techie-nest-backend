@@ -1,5 +1,7 @@
 package com.dango.exception;
 
+import com.dango.model.ErrorCode;
+
 /**
  * 自定义业务异常类。
  * 用于在业务逻辑处理过程中，当遇到不符合业务规则的情况时抛出。
@@ -10,13 +12,25 @@ package com.dango.exception;
 public class BusinessException extends RuntimeException {
     private final String errMessage;
 
+    private final int code;
+
     public BusinessException(String errMessage) {
         super(errMessage);
         this.errMessage = errMessage;
+        this.code = -1;
+    }
+
+    public BusinessException(ErrorCode errorCode) {
+        this.errMessage = errorCode.getMessage();
+        this.code = errorCode.getCode();
     }
 
     public String getErrMessage() {
         return errMessage;
+    }
+
+    public int getCode() {
+        return code;
     }
 
     /**

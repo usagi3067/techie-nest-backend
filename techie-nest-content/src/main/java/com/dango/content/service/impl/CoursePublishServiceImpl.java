@@ -19,6 +19,7 @@ import com.dango.exception.BusinessException;
 import com.dango.exception.CommonError;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MqMessageService;
+import com.dango.model.state.CourseStatus;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
@@ -216,7 +217,7 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
 
         // 拷贝到课程发布对象
         BeanUtils.copyProperties(coursePublishPre, coursePublish);
-        coursePublish.setStatus("203002");
+        coursePublish.setStatus(CourseStatus.PUBLISHED.getCode());
         CoursePublish coursePublishUpdate = baseMapper.selectById(courseId);
         if (coursePublishUpdate == null) {
             baseMapper.insert(coursePublish);

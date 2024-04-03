@@ -2,6 +2,7 @@ package com.dango.auth.ucenter.service;
 
 import com.dango.auth.ucenter.model.dto.AuthParamsDto;
 import com.dango.auth.ucenter.model.dto.UserExt;
+import com.dango.auth.ucenter.model.entity.User;
 
 /**
  * @author dango
@@ -15,5 +16,5 @@ public interface AuthService {
      * @param authParamsDto 认证参数
      * @return 认证用户信息
      */
-    UserExt execute(AuthParamsDto authParamsDto);
+    User execute(AuthParamsDto authParamsDto);
 }

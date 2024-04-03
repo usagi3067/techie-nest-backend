@@ -7,7 +7,6 @@ import com.dango.media.model.dto.UploadFileResultDto;
 import com.dango.media.model.entity.MediaFiles;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
-import com.dango.model.RestResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -60,7 +59,7 @@ public interface MediaFilesService extends IService<MediaFiles> {
      * @return RestResponse<java.lang.Boolean> false不存在，true存在
      * @description 检查文件是否存在
      */
-    RestResponse<Boolean> checkFile(String fileMd5);
+    Boolean checkFile(String fileMd5);
 
     /**
      * @param fileMd5    文件的md5
@@ -68,19 +67,19 @@ public interface MediaFilesService extends IService<MediaFiles> {
      * @return RestResponse<java.lang.Boolean> false不存在，true存在
      * @description 检查分块是否存在
      */
-    RestResponse<Boolean> checkChunk(String fileMd5, int chunkIndex);
+    Boolean checkChunk(String fileMd5, int chunkIndex);
 
     /**
      * @param fileMd5            文件md5
      * @param chunk              分块序号
      * @param localChunkFilePath 分块文件本地路径
-     * @return RestResponse
+     * @return BaseResponse
      * @description 上传分块
      */
-    RestResponse<Boolean> uploadChunk(String fileMd5, int chunk, String localChunkFilePath);
+    Boolean uploadChunk(String fileMd5, int chunk, String localChunkFilePath);
 
 
-    RestResponse<Boolean> mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto);
+    Boolean mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto);
 
     /**
      * 从minio下载文件

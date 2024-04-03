@@ -1,6 +1,7 @@
 package com.dango.learning.feignclient;
 
 import com.dango.learning.model.dto.CoursePublish;
+import com.dango.model.BaseResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,6 @@ public interface ContentServiceClient {
 
     @ResponseBody
     @GetMapping("/api/content/r/coursepublish/{courseId}")
-    public CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId);
+    public BaseResponse<CoursePublish> getCoursepublish(@PathVariable("courseId") Long courseId);
 
 }

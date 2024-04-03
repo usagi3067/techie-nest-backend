@@ -6,12 +6,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.mapper.CourseBaseMapper;
 import com.dango.content.mapper.CourseCategoryMapper;
 import com.dango.content.mapper.CourseMarketMapper;
+import com.dango.content.mapper.TeachPlanMapper;
 import com.dango.content.model.dto.*;
 import com.dango.content.model.entity.CourseBase;
+import com.dango.content.model.entity.TeachPlan;
 import com.dango.content.service.CourseBaseService;
 import com.dango.exception.BusinessException;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
+import com.dango.model.state.CourseAuditStatus;
+import com.dango.model.state.CourseFeeStatus;
+import com.dango.model.state.CourseStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -35,6 +40,9 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
     @Resource
     private CourseCategoryMapper courseCategoryMapper;
 
+    @Resource
+    private TeachPlanMapper teachPlanMapper;
+
     /**
      * 分页查询课程列表
      * @param pageParam 分页参数
@@ -42,7 +50,7 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
      * @return 课程列表
      */
     @Override
-    public PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageDto queryCoursePageDto) {
+    public PageResult<CourseBase> queryCoursePageList(Long companyId, PageParams pageParam, QueryCoursePageDto queryCoursePageDto) {
         // 1. 构建查询对象
         LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
         // 1.1 课程名称模糊查询
@@ -51,6 +59,8 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getAuditStatus()), CourseBase::getAuditStatus, queryCoursePageDto.getAuditStatus());
         // 1.3 课程发布状态精确查询
         queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getPublishStatus()), CourseBase::getStatus, queryCoursePageDto.getPublishStatus());
+        // 1.4 根据培训机构id拼装查询条件
+        queryWrapper.eq(CourseBase::getCompanyId, companyId);
 
         // 2. 分页查询
         // 2.1 构建分页对象
@@ -66,9 +76,9 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         CourseBase courseBase = new CourseBase();
         BeanUtils.copyProperties(addCourseDto, courseBase);
         // 设置审核状态 todo 提取枚举类
-        courseBase.setAuditStatus("202002");
+        courseBase.setAuditStatus(CourseAuditStatus.NOT_SUBMITTED.getCode());
         // 设置发布状态 todo 提取枚举类
-        courseBase.setStatus("203001");
+        courseBase.setStatus(CourseStatus.UNPUBLISHED.getCode());
         // 设置机构id
         courseBase.setCompanyId(companyId);
 
@@ -145,6 +155,28 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         return getCourseBaseInfo(courseId);
     }
 
+    @Transactional
+    @Override
+    public Boolean deleteCourse(Long companyId, Long courseId) {
+        CourseBase courseBase = baseMapper.selectById(courseId);
+        if (!companyId.equals(courseBase.getCompanyId()))
+            throw new BusinessException("只允许删除本机构的课程");
+        // 删除课程教师信息
+//        LambdaQueryWrapper<CourseTeacher> teacherLambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        teacherLambdaQueryWrapper.eq(CourseTeacher::getCourseId, courseId);
+//        courseTeacherMapper.delete(teacherLambdaQueryWrapper);
+        // 删除课程计划
+        LambdaQueryWrapper<TeachPlan> teachplanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        teachplanLambdaQueryWrapper.eq(TeachPlan::getCourseId, courseId);
+        teachPlanMapper.delete(teachplanLambdaQueryWrapper);
+        // 删除营销信息
+        courseMarketMapper.deleteById(courseId);
+        // 删除课程基本信息
+        baseMapper.deleteById(courseId);
+
+        return true;
+    }
+
     private void saveCourseMarket(CourseMarket courseMarket) {
         // 参数合法性校验
         String charge = courseMarket.getCharge();
@@ -153,7 +185,7 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         }
 
         // 如果课程收费， 价格没有填写也需要抛出异常  todo 枚举类提取
-        if ("201001".equals(charge)) {
+        if (CourseFeeStatus.PAID.getCode().equals(charge)) {
             if (Objects.isNull(courseMarket.getPrice()) || courseMarket.getPrice().floatValue() <= 0) {
                 throw new RuntimeException("课程收费，价格不能为空且大于0");
             }

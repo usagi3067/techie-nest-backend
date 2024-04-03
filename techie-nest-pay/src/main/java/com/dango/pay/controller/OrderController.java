@@ -6,6 +6,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.dango.exception.BusinessException;
+import com.dango.model.BaseResponse;
 import com.dango.pay.config.AlipayConfig;
 import com.dango.pay.domain.dto.AddOrderDto;
 import com.dango.pay.domain.dto.PayRecordDto;
@@ -13,6 +14,7 @@ import com.dango.pay.domain.dto.PayStatusDto;
 import com.dango.pay.domain.entity.XcPayRecord;
 import com.dango.pay.service.XcOrdersService;
 import com.dango.pay.util.SecurityUtil;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -57,28 +59,27 @@ public class OrderController {
     @ApiOperation("生成支付二维码")
     @PostMapping("/generatepaycode")
     @ResponseBody
-    public PayRecordDto generatePayCode(@RequestBody AddOrderDto addOrderDto) {
+    public BaseResponse<PayRecordDto> generatePayCode(@RequestBody AddOrderDto addOrderDto) {
         //登录用户
         SecurityUtil.User user = SecurityUtil.getUser();
-        if(user == null){
+        if (user == null) {
             throw new BusinessException("请登录后继续选课");
         }
-        return orderService.createOrder(user.getId(), addOrderDto);
-
-
+        PayRecordDto order = orderService.createOrder(user.getId(), addOrderDto);
+        return ResultUtils.success(order);
     }
 
     @ApiOperation("扫码下单接口")
     @GetMapping("/requestpay")
-    public void requestpay(String payNo, HttpServletResponse httpResponse) throws IOException {
+    public BaseResponse<Boolean> requestpay(String payNo, HttpServletResponse httpResponse) throws IOException {
         //如果payNo不存在则提示重新发起支付
         XcPayRecord payRecord = orderService.getPayRecordByPayno(payNo);
-        if(payRecord == null){
+        if (payRecord == null) {
             throw new BusinessException("请重新点击支付获取二维码");
         }
         //支付状态
         String status = payRecord.getStatus();
-        if("601002".equals(status)){
+        if ("601002".equals(status)) {
             throw new BusinessException("订单已支付，请勿重复支付。");
         }
         //构造sdk的客户端对象
@@ -87,9 +88,9 @@ public class OrderController {
 //        alipayRequest.setReturnUrl("http://domain.com/CallBack/return_url.jsp");
         alipayRequest.setNotifyUrl("http://dango1123.nat300.top/api/orders/receivenotify");//在公共参数中设置回跳和通知地址
         alipayRequest.setBizContent("{" +
-                " \"out_trade_no\":\""+payRecord.getPayNo()+"\"," +
-                " \"total_amount\":\""+payRecord.getTotalPrice()+"\"," +
-                " \"subject\":\""+payRecord.getOrderName()+"\"," +
+                " \"out_trade_no\":\"" + payRecord.getPayNo() + "\"," +
+                " \"total_amount\":\"" + payRecord.getTotalPrice() + "\"," +
+                " \"subject\":\"" + payRecord.getOrderName() + "\"," +
                 " \"product_code\":\"QUICK_WAP_PAY\"" +
                 " }");//填充业务参数
         String form = "";
@@ -103,26 +104,26 @@ public class OrderController {
         httpResponse.getWriter().write(form);//直接将完整的表单html输出到页面
         httpResponse.getWriter().flush();
         httpResponse.getWriter().close();
-
+        return ResultUtils.success(true);
     }
 
     @ApiOperation("查询支付结果")
     @GetMapping("/payresult")
     @ResponseBody
-    public PayRecordDto payresult(String payNo) throws IOException {
+    public BaseResponse<PayRecordDto> payresult(String payNo) throws IOException {
 
         //调用支付宝接口查询
         PayRecordDto payRecordDto = orderService.queryPayResult(payNo);
-        return payRecordDto;
+        return ResultUtils.success(payRecordDto);
     }
 
 
     @ApiOperation("接收支付结果通知")
     @PostMapping("/receivenotify")
-    public void receivenotify(HttpServletRequest request) throws UnsupportedEncodingException, AlipayApiException {
-        Map<String,String> params = new HashMap<>();
+    public BaseResponse<Boolean> receivenotify(HttpServletRequest request) throws UnsupportedEncodingException, AlipayApiException {
+        Map<String, String> params = new HashMap<>();
         Map requestParams = request.getParameterMap();
-        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
             String name = (String) iter.next();
             String[] values = (String[]) requestParams.get(name);
             String valueStr = "";
@@ -136,18 +137,18 @@ public class OrderController {
         //验签
         boolean verify_result = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
 
-        if(verify_result) {//验证成功
+        if (verify_result) {//验证成功
 
             //商户订单号
-            String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
+            String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
             //支付宝交易号
-            String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"),"UTF-8");
+            String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
             //交易状态
-            String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"),"UTF-8");
+            String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
             //appid
-            String app_id = new String(request.getParameter("app_id").getBytes("ISO-8859-1"),"UTF-8");
+            String app_id = new String(request.getParameter("app_id").getBytes("ISO-8859-1"), "UTF-8");
             //total_amount
-            String total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"),"UTF-8");
+            String total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"), "UTF-8");
 
             //交易成功处理
             if (trade_status.equals("TRADE_SUCCESS")) {
@@ -164,10 +165,7 @@ public class OrderController {
             }
         }
 
-
+        return ResultUtils.success(true);
     }
-
-
-
 }
 

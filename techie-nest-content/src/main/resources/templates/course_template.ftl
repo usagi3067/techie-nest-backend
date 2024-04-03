@@ -10,15 +10,138 @@
     <link rel="icon" href="/static/img/asset-favicon.ico">
     <title>技术巢穴-${model.courseBase.name}</title>
 
-    <link rel="stylesheet" href="/static/plugins/normalize-css/normalize.css" />
-    <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/static/css/page-learing-article.css" />
+    <link rel="stylesheet" href="/static/plugins/normalize-css/normalize.css"/>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/css/page-learing-article.css"/>
+
+    <!-- 引入Vue -->
+    <script src="https://unpkg.com/vue@3.2.13"></script>
+    <!-- 引入Day.js及其插件 -->
+    <script src="https://unpkg.com/dayjs/dayjs.min.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/customParseFormat.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/weekday.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/localeData.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/weekOfYear.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/weekYear.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/advancedFormat.js"></script>
+    <script src="https://unpkg.com/dayjs/plugin/quarterOfYear.js"></script>
+    <!-- 引入Ant Design Vue -->
+    <link href="http://www.dango1123.top/test/css/reset.css" rel="stylesheet">
+    <script src="http://www.dango1123.top/test/js/antd.min.js"></script>
+œ
 </head>
 
-<body data-spy="scroll" data-target="#articleNavbar" data-offset="150">
-<!-- 页面头部 -->
-<!--#include virtual="/include/header.html"-->
-<!--页面头部结束sss-->
+<#--<body data-spy="scroll" data-target="#articleNavbar" data-offset="150">-->
+<body>
+
+<div id="app">
+    <div>
+        <a-layout>
+            <a-layout-content :style="{ padding: '0 50px', marginTop: '10px' }">
+                <a-breadcrumb :style="{ margin: '16px 0' }">
+                    <a-breadcrumb-item>${model.courseBase.mtName}</a-breadcrumb-item>
+                    <a-breadcrumb-item>${model.courseBase.stName}</a-breadcrumb-item>
+                </a-breadcrumb>
+                <div :style="{ background: '#fff', padding: '24px', minHeight: '200px',borderRadius: '20px'}">
+                    <a-row>
+                        <a-col :span="12">
+                            <div class="content-left" :style="{borderRadius: '20px'}">
+                                <a-image :width="450" :height="300" :src="url" :style="{borderRadius: '20px'}"/>
+                            </div>
+                        </a-col>
+                        <a-col :span="12">
+                            <div class="content-right" :style="{ display: 'flex', justifyContent: 'center', height: '100%', flexDirection: 'column'}">
+                                <div>
+                                    <span class=" course-name
+                            ">${model.courseBase.name}</span>
+                </div>
+                <div>
+                    <span v-if="charge === '201000'" style="color: green;">免费</span>
+                    <span v-else-if="charge === '201001'" style="color: orange;">收费</span>
+                </div>
+                <div class="content-right-down">
+                    <a-button shape="round" type="primary" size="large" class="custom-button"
+                              @click="showModal">
+                        立即参加
+                    </a-button>
+                    <a-modal v-model:open="open" title="Basic Modal" @ok="handleOk">
+                        <div v-if="${model.courseBase.charge} == '201000'">
+                            <p>欢迎加入本课程！无论您是刚刚发现这门课程，还是已经是我们的学习伙伴，我们都期待与您一起探索知识的旅程。</p>
+                            <a-button shape="round" type="primary" size="large" class="custom-button"
+                                              @click="addCourseTable()">
+                                选课学习
+                                <a-button shape="round" type="primary" size="large" class="custom-button"
+                                          @click="showModal">
+                                    立即参加
+                                </a-button>
+                            </a-button>
+                    </a-modal>
+                </div>
+    </div>
+
+    <!-- 在组件的模板中 -->
+
+    </a-col>
+    </a-row>
+
+
+</div>
+</a-layout-content>
+</a-layout>
+</div>
+
+<div>
+    <a-layout-content :style="{ marginTop: '10px' }">
+        <a-row>
+            <a-col :span="18">
+                <a-menu v-model:selected-keys="current" mode="horizontal" :items="items">
+                </a-menu>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="18">
+
+                <div :style="{ background: '#fff', padding: '24px', minHeight: '200px'}">
+
+                    <div v-if="current[0] == '1'">
+                        <h1>课程概述</h1>
+                        ${model.courseBase.description}
+                        <h1>适合人群</h1>
+                        ${model.courseBase.users}
+                    </div>
+                    <div v-else-if="current[0] == '2'">
+                        <div class="articleItem">
+                            <div class="catalog">
+                                <#list model.teachPlans as firstNode>
+                                    <div class="chapter">
+                                        <div class="chapter-title">${firstNode.planName}<span
+                                                    class="chapter-duration">x小时</span>
+                                        </div>
+                                        <div class="chapter-content">
+                                            <ul class="section-list">
+                                                <#list firstNode.teachPlanTreeNodes as secondNode>
+                                                    <li class="section-item">
+                                                        ${secondNode.planName}
+                                                    </li>
+                                                </#list>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </#list>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </a-col>
+        </a-row>
+    </a-layout-content>
+</div>
+</div>
+
+
 <div id="learningArea">
     <div class="article-banner">
         <div class="banner-bg"></div>
@@ -58,7 +181,8 @@
             </div>
             <div class="banner-rit">
                 <p>
-                    <a href="http://www.dango1123.top/course/preview/learning.html?id=${model.courseBase.id}" target="_blank">
+                    <a href="http://www.dango1123.top/course/preview/learning.html?id=${model.courseBase.id}"
+                       target="_blank">
                         <#if model.courseBase.pic??>
                             <img src="http://file.dango1123.top${model.courseBase.pic}" alt="" width="270" height="156">
                         <#else>
@@ -67,7 +191,8 @@
 
                     </a>
                 </p>
-                <p class="vid-act"><span> <i class="i-heart"></i>收藏 23 </span> <span>分享 <i class="i-weixin"></i><i class="i-qq"></i></span></p>
+                <p class="vid-act"><span> <i class="i-heart"></i>收藏 23 </span> <span>分享 <i class="i-weixin"></i><i
+                                class="i-qq"></i></span></p>
             </div>
         </div>
     </div>
@@ -97,7 +222,7 @@
                             <div class="content-com suit">
                                 <div class="title"><span>适用人群</span></div>
                                 <div class="cont cktop">
-                                    <div >
+                                    <div>
                                         <p>${model.courseBase.users!""}</p>
                                     </div>
                                     <!--<span class="on-off">更多 <i class="i-chevron-bot"></i></span>-->
@@ -110,7 +235,8 @@
                                     <div class="info-box">
                                         <p class="name">教学方：<em>XX老师</em></p>
                                         <!-- <p class="lab">高级前端开发工程师 10年开发经验</p>-->
-                                        <p class="info">JavaEE开发与教学多年，精通JavaEE技术体系，对流行框架JQuery、DWR、Struts1/2，Hibernate，Spring，MyBatis、JBPM、Lucene等有深入研究。授课逻辑严谨，条理清晰，注重学生独立解决问题的能力。</p>
+                                        <p class="info">
+                                            JavaEE开发与教学多年，精通JavaEE技术体系，对流行框架JQuery、DWR、Struts1/2，Hibernate，Spring，MyBatis、JBPM、Lucene等有深入研究。授课逻辑严谨，条理清晰，注重学生独立解决问题的能力。</p>
                                         <!-- <p><span>难度等级</span>中级</p>
                                          <p><span>课程时长</span>8-16小时/周，共4周</p>
                                          <p><span>如何通过</span>通过所有的作业及考核，作业共4份，考核为一次终极考核</p>
@@ -123,7 +249,7 @@
                             <div class="content-com about">
                                 <div class="title"><span>课程介绍</span></div>
                                 <div class="cont cktop">
-                                    <div >
+                                    <div>
                                         <p>${model.courseBase.description!""}</p>
                                     </div>
                                     <!--<span class="on-off">更多 <i class="i-chevron-bot"></i></span>-->
@@ -135,27 +261,33 @@
                                     <ul>
                                         <li class="item"><span class="on-off"><i class="i-chevron-bot"></i> 我什么时候能够访问课程视频与作业？</span>
                                             <div class="drop-down">
-                                                <p>课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
+                                                <p>
+                                                    课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
                                             </div>
                                         </li>
                                         <li class="item"><span class="on-off"><i class="i-chevron-bot"></i> 如何需要额外的时间来完成课程会怎么样？</span>
                                             <div class="drop-down">
-                                                <p>课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
+                                                <p>
+                                                    课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
                                             </div>
                                         </li>
                                         <li class="item"><span class="on-off"><i class="i-chevron-bot"></i> 我支付次课程之后会得到什么？</span>
                                             <div class="drop-down">
-                                                <p>课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
+                                                <p>
+                                                    课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
                                             </div>
                                         </li>
                                         <li class="item"><span class="on-off"><i class="i-chevron-bot"></i> 退款条例是如何规定的？</span>
                                             <div class="drop-down">
-                                                <p>课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
+                                                <p>
+                                                    课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
                                             </div>
                                         </li>
-                                        <li class="item"><span class="on-off"><i class="i-chevron-bot"></i> 有助学金？</span>
+                                        <li class="item"><span class="on-off"><i
+                                                        class="i-chevron-bot"></i> 有助学金？</span>
                                             <div class="drop-down">
-                                                <p>课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
+                                                <p>
+                                                    课程安排灵活，课程费用支付提供180天全程准入和资格证书。自定进度课程建议的最后期限，但你不会受到惩罚错过期限，只要你赚你的证书在180天内。以会话为基础的课程可能要求你在截止日期前保持正轨，但如果你落后了，你可以切换到以后的会议，你完成的任何工作将与你转移。</p>
                                             </div>
                                         </li>
                                     </ul>
@@ -176,32 +308,19 @@
                         <div class="content">
                             <#list model.teachPlans as firstNode>
                                 <div class="item">
-                                    <div class="title act"><i class="i-chevron-top"></i>${firstNode.planName}<span class="time">x小时</span></div>
+                                    <div class="title act"><i class="i-chevron-top"></i>${firstNode.planName}<span
+                                                class="time">x小时</span></div>
                                     <div class="drop-down" style="height: 260px;">
                                         <ul class="list-box">
                                             <#list firstNode.teachPlanTreeNodes as secondNode>
-                                                <li><a href="http://www.dango1123.top/course/preview/learning.html?id=${model.courseBase.id}&chapter=${secondNode.teachPlanMedia.teachPlanId!''}" target="_blank">${secondNode.planName}</a></li>
+                                                <li>
+                                                    <a href="http://www.dango1123.top/course/preview/learning.html?id=${model.courseBase.id}&chapter=${secondNode.teachPlanMedia.teachPlanId!''}"
+                                                       target="_blank">${secondNode.planName}</a></li>
                                             </#list>
                                         </ul>
                                     </div>
                                 </div>
                             </#list>
-                            <#-- <div class="item">
-                                 <div class="title act"><i class="i-chevron-top"></i>第一阶段 HTTP协议基础详解<span class="time">8小时</span></div>
-                                 <div class="about">使用Java消息中间件处理异步消息成为了分布式系统中的必修课，通过本门课程可以深入浅出的学习如何在Java中使用消息中间件并且一步一步打造更优雅的最佳实践方案。</div>
-                                 <div class="drop-down" style="height: 260px;">
-                                     <ul class="list-box">
-                                         <li class="active">1.1 阅读：分级政策细节 <span>97’33”</span></li>
-                                         <li>1.2 视频：为什么分为 A 部分、B 部分、C 部分 <span>66’15”</span></li>
-                                         <li>1.3 视频：软件安装介绍 <span>86’42”</span></li>
-                                         <li>1.4 阅读：Emacs安装 <span>59’00”</span></li>
-                                         <li>1.5 作业1：Emacs安装 <span>93’29”</span></li>
-                                         <li>阶段测试</li>
-                                     </ul>
-                                 </div>
-                             </div>-->
-
-
                         </div>
                     </div>
                     <!--侧边栏-->
@@ -282,7 +401,7 @@
                                         <li>阶段测试</li>
                                     </ul>
                                 </div>
-    
+
                             </div>
                             <div class="item">
                                 <a href="#" class="overwrite">毕业考核</a>
@@ -300,7 +419,9 @@
                         <div class="content">
                             <div class="content-title">
                                 <p><a class="all">全部</a><a>精选</a><a>我的</a></p>
-                                <p><a class="all">全部</a><span><a>1.1</a><a>1.2</a><a>1.3</a><a>1.4</a><a>1.5</a></span><a href="$" class="more">更多 <i class="i-chevron-bot"></i></a></p>
+                                <p>
+                                    <a class="all">全部</a><span><a>1.1</a><a>1.2</a><a>1.3</a><a>1.4</a><a>1.5</a></span><a
+                                            href="$" class="more">更多 <i class="i-chevron-bot"></i></a></p>
                             </div>
                             <div class="item">
                                 <div class="item-left">
@@ -320,8 +441,10 @@
                                 </div>
                                 <div class="item-right">
                                     <p class="title">如何用微服务重构应用程序?</p>
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。 【最新 <i class="new">心跳347890</i> 的回答】</p>
-                                    <p>2017-3-20 <span class="action-box"><span><i class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
+                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。
+                                        【最新 <i class="new">心跳347890</i> 的回答】</p>
+                                    <p>2017-3-20 <span class="action-box"><span><i
+                                                        class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -332,8 +455,10 @@
                                 </div>
                                 <div class="item-right">
                                     <p class="title">如何用微服务重构应用程序?</p>
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。 【最新 <i class="new">心跳347890</i> 的回答】</p>
-                                    <p>2017-3-20 <span class="action-box"><span><i class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
+                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。
+                                        【最新 <i class="new">心跳347890</i> 的回答】</p>
+                                    <p>2017-3-20 <span class="action-box"><span><i
+                                                        class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -344,8 +469,10 @@
                                 </div>
                                 <div class="item-right">
                                     <p class="title">如何用微服务重构应用程序?</p>
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。 【最新 <i class="new">心跳347890</i> 的回答】</p>
-                                    <p>2017-3-20 <span class="action-box"><span><i class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
+                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。
+                                        【最新 <i class="new">心跳347890</i> 的回答】</p>
+                                    <p>2017-3-20 <span class="action-box"><span><i
+                                                        class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -356,8 +483,10 @@
                                 </div>
                                 <div class="item-right">
                                     <p class="title">如何用微服务重构应用程序?</p>
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。 【最新 <i class="new">心跳347890</i> 的回答】</p>
-                                    <p>2017-3-20 <span class="action-box"><span><i class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
+                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。
+                                        【最新 <i class="new">心跳347890</i> 的回答】</p>
+                                    <p>2017-3-20 <span class="action-box"><span><i
+                                                        class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -368,8 +497,10 @@
                                 </div>
                                 <div class="item-right">
                                     <p class="title">如何用微服务重构应用程序?</p>
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。 【最新 <i class="new">心跳347890</i> 的回答】</p>
-                                    <p>2017-3-20 <span class="action-box"><span><i class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
+                                    <p>在讨论如何将重构转化为微服务之前，退后一步，仔细观察微服务的内容和时间是很重要的。以下两个要点将会对任何微服务重构策略产生重大影响。
+                                        【最新 <i class="new">心跳347890</i> 的回答】</p>
+                                    <p>2017-3-20 <span class="action-box"><span><i
+                                                        class="i-answer"></i>回答 2</span><span><i class="i-browse"></i>浏览 12</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -390,7 +521,9 @@
                         <div class="content">
                             <div class="content-title">
                                 <p><a class="all">全部</a><a>精选</a><a>我的</a></p>
-                                <p><a class="all">全部</a><span><a>1.1</a><a>1.2</a><a>1.3</a><a>1.4</a><a>1.5</a></span><a href="$" class="more">更多 <i class="i-chevron-bot"></i></a></p>
+                                <p>
+                                    <a class="all">全部</a><span><a>1.1</a><a>1.2</a><a>1.3</a><a>1.4</a><a>1.5</a></span><a
+                                            href="$" class="more">更多 <i class="i-chevron-bot"></i></a></p>
                             </div>
                             <div class="item">
                                 <div class="item-left">
@@ -400,7 +533,8 @@
                                 <div class="item-right">
                                     <span class="video-time"><i class="i-play"></i>2`10`</span>
                                     <p><img src="/static/img/widget-demo.png" width="221" alt=""></p>
-                                    <p class="action-box">4小时前 <span class="active-box"><span><i class="i-coll"></i>采集</span><span><i class="i-laud"></i>赞</span></span>
+                                    <p class="action-box">4小时前 <span class="active-box"><span><i class="i-coll"></i>采集</span><span><i
+                                                        class="i-laud"></i>赞</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -410,8 +544,13 @@
                                     <p>毛老师</p>
                                 </div>
                                 <div class="item-right">
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。 </p>
-                                    <p class="action-box">4小时前 <span class="active-box"><span><i class="i-edt"></i>编辑</span><span><i class="i-del"></i>删除</span><span><i class="i-laud"></i>赞</span></span>
+                                    <p>
+                                        在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。
+                                    </p>
+                                    <p class="action-box">4小时前 <span class="active-box"><span><i
+                                                        class="i-edt"></i>编辑</span><span><i
+                                                        class="i-del"></i>删除</span><span><i
+                                                        class="i-laud"></i>赞</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -421,8 +560,13 @@
                                     <p>毛老师</p>
                                 </div>
                                 <div class="item-right">
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。 </p>
-                                    <p class="action-box">4小时前 <span class="active-box"><span><i class="i-edt"></i>编辑</span><span><i class="i-del"></i>删除</span><span><i class="i-laud"></i>赞</span></span>
+                                    <p>
+                                        在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。
+                                    </p>
+                                    <p class="action-box">4小时前 <span class="active-box"><span><i
+                                                        class="i-edt"></i>编辑</span><span><i
+                                                        class="i-del"></i>删除</span><span><i
+                                                        class="i-laud"></i>赞</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -432,8 +576,13 @@
                                     <p>毛老师</p>
                                 </div>
                                 <div class="item-right">
-                                    <p>在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。 </p>
-                                    <p class="action-box">4小时前 <span class="active-box"><span><i class="i-edt"></i>编辑</span><span><i class="i-del"></i>删除</span><span><i class="i-laud"></i>赞</span></span>
+                                    <p>
+                                        在讨论如何将重构转化为微服务之前，退后一步，<br>仔细观察微服务的内容和时间是很重要的。<br>以下两个要点将会对任何微服务重构策略产生重大影响。
+                                    </p>
+                                    <p class="action-box">4小时前 <span class="active-box"><span><i
+                                                        class="i-edt"></i>编辑</span><span><i
+                                                        class="i-del"></i>删除</span><span><i
+                                                        class="i-laud"></i>赞</span></span>
                                     </p>
                                 </div>
                             </div>
@@ -450,14 +599,16 @@
                         <div class="comment-box">
                             <div class="evaluate">
                                 <div class="eva-top">
-                                    <div class="tit">课程评分 </div>
+                                    <div class="tit">课程评分</div>
                                     <div class="star">
                                         <div class="score"><i>5</i></div>
-                                    </div><span class="star-score"> <i>5</i> 分</span></div>
+                                    </div>
+                                    <span class="star-score"> <i>5</i> 分</span></div>
                                 <div class="eva-cont">
-                                    <div class="tit">学员评语 </div>
+                                    <div class="tit">学员评语</div>
                                     <div class="text-box">
-                                        <textarea class="form-control" rows="5" placeholder="扯淡、吐槽、表扬、鼓励......想说啥说啥！"></textarea>
+                                    <textarea class="form-control" rows="5"
+                                              placeholder="扯淡、吐槽、表扬、鼓励......想说啥说啥！"></textarea>
                                         <div class="text-right"><span>发表评论</span></div>
                                     </div>
                                 </div>
@@ -465,8 +616,8 @@
                             <div class="course-evaluate">
                                 <div class="top-tit">评论
                                     <span>
-                        <label><input name="eval" type="radio" value="" checked /> 所有学生 </label>
-                        <label><input name="eval" type="radio" value="" /> 完成者 </label>
+                        <label><input name="eval" type="radio" value="" checked/> 所有学生 </label>
+                        <label><input name="eval" type="radio" value=""/> 完成者 </label>
                     </span>
                                 </div>
                                 <div class="top-cont">
@@ -520,7 +671,8 @@
                                             <p>毛老师</p>
                                         </div>
                                         <div class="item-cent">
-                                            <p>很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
+                                            <p>
+                                                很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
                                             <p class="time">2017-2-43</p>
                                         </div>
                                         <div class="item-rit">
@@ -538,7 +690,8 @@
                                             <p>毛老师</p>
                                         </div>
                                         <div class="item-cent">
-                                            <p>很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
+                                            <p>
+                                                很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
                                             <p class="time">2017-2-43</p>
                                         </div>
                                         <div class="item-rit">
@@ -556,7 +709,8 @@
                                             <p>毛老师</p>
                                         </div>
                                         <div class="item-cent">
-                                            <p>很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
+                                            <p>
+                                                很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
                                             <p class="time">2017-2-43</p>
                                         </div>
                                         <div class="item-rit">
@@ -574,7 +728,8 @@
                                             <p>毛老师</p>
                                         </div>
                                         <div class="item-cent">
-                                            <p>很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
+                                            <p>
+                                                很受用，如果再深入下就更好了。虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！虽然都是入门级别的，但是也很使用，后续就需要自己发挥了！</p>
                                             <p class="time">2017-2-43</p>
                                         </div>
                                         <div class="item-rit">
@@ -605,7 +760,9 @@
             <div class="title">${model.courseBase.name} <span class="close-popup-course-box">×</span></div>
             <div class="content">
                 <p>欢迎学习本课程，本课程免费您可以立即学习，也可加入我的课程表享受更优质的服务。</p>
-                <p><a href="#" @click.prevent="addCourseTable()">加入我的课程表</a>  <a href="#" @click.prevent="startLearning()">立即学习</a></p>
+                <p><a href="#" @click.prevent="addCourseTable()">加入我的课程表</a> <a href="#"
+                                                                                       @click.prevent="startLearngin()">立即学习</a>
+                </p>
             </div>
         </div>
     </div>
@@ -618,25 +775,187 @@
                 <img :src="qrcode" width="200" height="200" alt="请点击支付宝支付按钮，并完成扫码支付。"/>
 
                 <div class="info">
-                    <p class="info-tit">${model.courseBase.name}<span>课程有效期:${model.courseBase.validDays!''}天</span></p>
+                    <p class="info-tit">${model.courseBase.name}
+                        <span>课程有效期:${model.courseBase.validDays!''}天</span>
+                    </p>
                     <p class="info-pic">课程价格 : <span>￥${model.courseBase.originalPrice!''}元</span></p>
                     <p class="info-new-pic">优惠价格 : <span>￥${model.courseBase.price!''}元</span></p>
                 </div>
             </div>
             <div class="fact-pic">实际支付: <span>￥${model.courseBase.price!''}元</span></div>
-            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#" @click.prevent="aliPay()">支付宝支付</a><a href="#" @click.prevent="querypayresult()">支付完成</a><a href="#" @click.prevent="startLearngin()">试学</a></div>
+            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#"
+                                                                                    @click.prevent="aliPay()">支付宝支付</a><a
+                        href="#" @click.prevent="querypayresult()">支付完成</a><a href="#"
+                                                                                  @click.prevent="startLearngin()">试学</a>
+            </div>
         </div>
         <!--支付弹窗- end -->
         <div class="popup-comment-box">
 
         </div>
     </div>
-    <!-- 页面底部 -->
-    <!--底部版权-->
-    <!--#include virtual="/include/footer.html"-->
-    <!--底部版权-->
 </div>
-<script>var courseId = "${model.courseBase.id}";var courseCharge = "${model.courseBase.charge}"</script>
+<script type="module">
+    const {createApp, ref, h} = Vue;
 
-<!--#include virtual="/include/course_detail_dynamic.html"-->
-</body>
+    const app = createApp({
+        // 定义组件和数据
+        setup() {
+            // 使用 ref 来创建响应式变量
+            const selectedKeys = ref(['2']); // 这里不需要指定类型，因为我们是在 JavaScript 中
+            // 可以返回任何你想在模板中使用的响应式变量
+            const urlPre = "http://file.dango1123.top";
+            const pic = "${model.courseBase.pic}";
+            const url = urlPre + pic;
+            const charge = ref("${model.courseBase.charge}");
+
+            const addCourseTable = () => {
+                showlogin()
+            }
+
+            const showlogin = () => {
+                window.location = "http://127.0.0.1/user/login?returnUrl="+ Base64.encode(window.location)
+            }
+
+            const items = ref([
+                {
+                    key: '1',
+                    label: '课程内容',
+                    title: '课程内容',
+                },
+                {
+                    key: '2',
+
+                    label: '课程目录',
+                    title: '课程目录',
+                },
+            ]);
+
+            const current = ref(['1']);
+
+
+            const showModal = () => {
+                open.value = true;
+            };
+
+            const handleOk = (e) => {
+                console.log(e);
+                open.value = false;
+            };
+
+            const open = ref(false);
+
+
+            return {
+                message: '欢迎来到我的简单 HTML 页面，使用 Vue 3!',
+                selectedKeys, // 将 selectedKeys 返回给模板
+                url,
+                charge,
+                current,
+                items,
+                handleOk,
+                showModal,
+                open,
+                addCourseTable
+            }
+        }
+    });
+    app.use(antd); // 使用Antd
+    app.mount('#app');
+
+
+</script>
+<script>var courseId = "${model.courseBase.id}";
+    var courseCharge = "${model.courseBase.charge}"
+    var url = "${model.courseBase.pic}"
+</script>
+
+<style scoped>
+    .content-right {
+        margin-top: 20px;
+        margin-left: 10px;
+    }
+
+    .course-name {
+        font-size: 24px; /* 增加字体大小 */
+        font-weight: bold; /* 字体加粗 */
+        color: #3A3A3A; /* 字体颜色 */
+        background-color: #EFEFEF; /* 背景颜色 */
+        padding: 10px; /* 内边距 */
+        border-radius: 10px; /* 圆角边框 */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+        display: inline-block; /* 使得padding有效 */
+        margin: 10px 0; /* 外边距 */
+    }
+
+    .catalog {
+        margin: 20px 0;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+
+    .chapter {
+        margin-bottom: 15px;
+    }
+
+    .chapter-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        padding: 10px 0;
+    }
+
+    .chapter-duration {
+        margin-left: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .chapter-content {
+        margin-top: 10px;
+    }
+
+    .section-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .section-item {
+        padding: 8px 0;
+    }
+
+
+    .content-right-down {
+        margin-top: 50px;
+        margin-left: 50px;
+    }
+
+    .custom-button {
+        background-color: #00C853; /* 设置为接近上传图片的绿色 */
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        padding: 10px 30px;
+        border: none; /* 去除边框 */
+        border-radius: 20px; /* 设置圆角的大小 */
+        box-shadow: 0 4px 14px 0 rgba(0, 200, 83, 0.39); /* 添加阴影效果 */
+        outline: none; /* 去除焦点边框 */
+        cursor: pointer; /* 鼠标悬停时显示指针 */
+        transition: background-color 0.3s, box-shadow 0.3s; /* 过渡动画 */
+    }
+
+    .custom-button:hover {
+        background-color: #009624; /* 悬停时的背景色 */
+        box-shadow: 0 6px 16px 0 rgba(0, 150, 36, 0.39); /* 悬停时的阴影效果 */
+    }
+
+    .content-right {
+        /*    灵活布局*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+    }
+</style>

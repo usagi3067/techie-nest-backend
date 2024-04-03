@@ -2,7 +2,8 @@ package com.dango.media.controller;
 
 import com.dango.media.model.dto.UploadFileParamsDto;
 import com.dango.media.service.MediaFilesService;
-import com.dango.model.RestResponse;
+import com.dango.model.BaseResponse;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ import java.io.File;
  * @date 2024-03-13
  */
 @RestController
-@Api(tags = "大文件上传接口")
+@Api(tags = "大文件上传接口", value = "大文件上传接口")
 public class BigFilesController {
     @Resource
     private MediaFilesService mediaFilesService;
@@ -33,9 +34,10 @@ public class BigFilesController {
      */
     @ApiOperation(value = "文件上传前检查")
     @PostMapping("/upload/check-file")
-    public RestResponse<Boolean> checkFile(@RequestParam("fileMd5") String fileMd5) throws Exception {
+    public BaseResponse<Boolean> checkFile(@RequestParam("fileMd5") String fileMd5) throws Exception {
         // 逻辑实现
-        return mediaFilesService.checkFile(fileMd5);
+        Boolean b = mediaFilesService.checkFile(fileMd5);
+        return ResultUtils.success(b);
     }
 
     /**
@@ -47,9 +49,10 @@ public class BigFilesController {
      */
     @ApiOperation(value = "分块文件上传前检查")
     @PostMapping("/upload/check-chunk")
-    public RestResponse<Boolean> checkChunk(@RequestParam("fileMd5") String fileMd5, @RequestParam("chunk") int chunk) throws Exception {
+    public BaseResponse<Boolean> checkChunk(@RequestParam("fileMd5") String fileMd5, @RequestParam("chunk") int chunk) throws Exception {
         // 逻辑实现
-        return mediaFilesService.checkChunk(fileMd5, chunk);
+        Boolean b = mediaFilesService.checkChunk(fileMd5, chunk);
+        return ResultUtils.success(b);
     }
 
     /**
@@ -62,7 +65,7 @@ public class BigFilesController {
      */
     @ApiOperation(value = "上传文件分块")
     @PostMapping("/upload/upload-chunk")
-    public RestResponse uploadChunk(@RequestParam("file") MultipartFile file, @RequestParam("fileMd5") String fileMd5, @RequestParam("chunk") int chunk) throws Exception {
+    public BaseResponse<Boolean> uploadChunk(@RequestParam("file") MultipartFile file, @RequestParam("fileMd5") String fileMd5, @RequestParam("chunk") int chunk) throws Exception {
         // 逻辑实现
         //创建临时文件
         File tempFile = File.createTempFile("minio", "temp");
@@ -70,7 +73,8 @@ public class BigFilesController {
         file.transferTo(tempFile);
         //文件路径
         String absolutePath = tempFile.getAbsolutePath();
-        return mediaFilesService.uploadChunk(fileMd5,chunk,absolutePath);
+        Boolean b = mediaFilesService.uploadChunk(fileMd5, chunk, absolutePath);
+        return ResultUtils.success(b);
     }
 
     /**
@@ -83,14 +87,15 @@ public class BigFilesController {
      */
     @ApiOperation(value = "合并文件分块")
     @PostMapping("/upload/merge-chunks")
-    public RestResponse<Boolean> mergeChunks(@RequestParam("fileMd5") String fileMd5, @RequestParam("fileName") String fileName, @RequestParam("chunkTotal") int chunkTotal) throws Exception {
+    public BaseResponse<Boolean> mergeChunks(@RequestParam("fileMd5") String fileMd5, @RequestParam("fileName") String fileName, @RequestParam("chunkTotal") int chunkTotal) throws Exception {
         long companyId = 1234L;
         //文件信息对象
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
         uploadFileParamsDto.setFilename(fileName);
         uploadFileParamsDto.setTags("视频文件");
         uploadFileParamsDto.setFileType("001002");
-        return mediaFilesService.mergechunks(companyId, fileMd5, chunkTotal, uploadFileParamsDto);
+        Boolean b = mediaFilesService.mergechunks(companyId, fileMd5, chunkTotal, uploadFileParamsDto);
+        return ResultUtils.success(b);
     }
 }
 

@@ -59,6 +59,12 @@ public class CourseTables implements Serializable {
     private String courseType;
 
     /**
+     * 课程图片
+     */
+    @TableField(value = "pic")
+    private String pic;
+
+    /**
      * 添加时间
      */
     @TableField(value = "create_date")

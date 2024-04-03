@@ -12,6 +12,11 @@
         <module>../techie-nest-content</module>
         <module>../techie-nest-system</module>
         <module>../techie-nest-media</module>
+        <module>../techie-nest-pay</module>
+        <module>../techie-nest-auth</module>
+        <module>../techie-nest-gateway</module>
+        <module>../techie-nest-learning</module>
+        <module>../techie-nest-search</module>
         <module>../techie-nest-message-sdk</module>
     </modules>
     <version>1.0-SNAPSHOT</version>

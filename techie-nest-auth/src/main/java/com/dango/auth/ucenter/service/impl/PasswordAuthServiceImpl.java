@@ -29,19 +29,7 @@ public class PasswordAuthServiceImpl implements AuthService {
 
 
     @Override
-    public UserExt execute(AuthParamsDto authParamsDto) {
-//        //校验验证码
-//        String checkcode = authParamsDto.getCheckcode();
-//        String checkcodekey = authParamsDto.getCheckcodekey();
-//
-//        if(StringUtils.isBlank(checkcodekey) || StringUtils.isBlank(checkcode)){
-//            throw new RuntimeException("验证码为空");
-//
-//        }
-//        Boolean verify = checkCodeClient.verify(checkcodekey, checkcode);
-//        if(!verify){
-//            throw new RuntimeException("验证码输入错误");
-//        }
+    public User execute(AuthParamsDto authParamsDto) {
 
 
         //账号
@@ -51,8 +39,6 @@ public class PasswordAuthServiceImpl implements AuthService {
             //返回空表示用户不存在
             throw new RuntimeException("账号不存在");
         }
-        UserExt UserExt = new UserExt();
-        BeanUtils.copyProperties(user, UserExt);
         //校验密码
         //取出数据库存储的正确密码
         String passwordDb = user.getPassword();
@@ -61,7 +47,7 @@ public class PasswordAuthServiceImpl implements AuthService {
         if (!matches) {
             throw new RuntimeException("账号或密码错误");
         }
-        return UserExt;
+        return user;
     
 
     }

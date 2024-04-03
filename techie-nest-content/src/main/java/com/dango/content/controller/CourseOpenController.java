@@ -3,7 +3,10 @@ package com.dango.content.controller;
 import com.dango.content.model.dto.CoursePreviewDto;
 import com.dango.content.service.CourseBaseService;
 import com.dango.content.service.CoursePublishService;
+import com.dango.model.BaseResponse;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,11 +33,13 @@ public class CourseOpenController {
      * 获取课程信息预览
      *
      * @param courseId 课程ID
-     * @return com.dango.content.model.dto.CoursePreviewDto
+     * @return BaseResponse<CoursePreviewDto>
      */
     @GetMapping("/course/whole/{courseId}")
-    public CoursePreviewDto retrieveCoursePreviewInfo(@PathVariable("courseId") Long courseId) {
+    @ApiOperation("获取课程信息预览")
+    public BaseResponse<CoursePreviewDto> retrieveCoursePreviewInfo(@PathVariable("courseId") Long courseId) {
         // 获取课程预览信息
-        return coursePublishService.fetchCoursePreviewInfo(courseId);
+        CoursePreviewDto coursePreviewDto = coursePublishService.fetchCoursePreviewInfo(courseId);
+        return ResultUtils.success(coursePreviewDto);
     }
 }

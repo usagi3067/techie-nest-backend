@@ -29,7 +29,13 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    //客户端详情服务
+    //配置客户端详情服务
+
+    /**
+     * 服务提供商会给批准接入的客户端一个身份，用于接入时的凭据，有客户端标识和客户端秘钥，在这里配置批准接入的客户端的详细信息。
+     * @param clients the client details configurer
+     * @throws Exception
+     */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients)
             throws Exception {
@@ -51,8 +57,8 @@ public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
-                .authenticationManager(authenticationManager)//认证管理器
-                .tokenServices(authorizationServerTokenServices)//令牌管理服务
+                .authenticationManager(authenticationManager)//认证管理器 这个AuthenticationManager是用来处理认证请求的，即它负责验证用户身份。
+                .tokenServices(authorizationServerTokenServices)//令牌管理服务 是用于创建和管理OAuth2令牌（access tokens和refresh tokens）的组件。
                 .allowedTokenEndpointRequestMethods(HttpMethod.POST);
     }
 

@@ -1,4 +1,4 @@
-package com.dango.auth;
+package com.dango;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

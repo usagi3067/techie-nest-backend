@@ -1,11 +1,14 @@
 package com.dango.content.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dango.content.mapper.CourseCategoryMapper;
+import com.dango.content.model.dto.CourseCategoryMenuDto;
 import com.dango.content.model.dto.CourseCategoryTreeDto;
 import com.dango.content.model.entity.CourseCategory;
-import com.dango.content.mapper.CourseCategoryMapper;
 import com.dango.content.service.CourseCategoryService;
 import com.google.common.collect.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,6 +58,38 @@ public class CourseCategoryServiceImpl extends ServiceImpl<CourseCategoryMapper,
                 });
 
         return courseCategoryList;
+    }
+
+    @Override
+    public List<CourseCategoryMenuDto> getAllMt() {
+        LambdaQueryWrapper<CourseCategory> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CourseCategory::getParentId, "1");
+        List<CourseCategory> courseCategories = baseMapper.selectList(queryWrapper);
+        List<CourseCategoryMenuDto> result = courseCategories.stream()
+                .map(courseCategory -> {
+                    CourseCategoryMenuDto dto = new CourseCategoryMenuDto();
+                    BeanUtils.copyProperties(courseCategory, dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+
+        return  result;
+    }
+
+    @Override
+    public List<CourseCategoryMenuDto> getAllSt(String id) {
+        LambdaQueryWrapper<CourseCategory> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CourseCategory::getParentId, id);
+        List<CourseCategory> courseCategories = baseMapper.selectList(queryWrapper);
+        List<CourseCategoryMenuDto> result = courseCategories.stream()
+                .map(courseCategory -> {
+                    CourseCategoryMenuDto dto = new CourseCategoryMenuDto();
+                    BeanUtils.copyProperties(courseCategory, dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return  result;
     }
 }
 

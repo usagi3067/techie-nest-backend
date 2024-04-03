@@ -1,13 +1,14 @@
 package com.dango.auth.controller;
 
 import com.dango.auth.ucenter.mapper.UserMapper;
+import com.dango.auth.ucenter.model.dto.RegisterDto;
 import com.dango.auth.ucenter.model.entity.User;
+import com.dango.auth.ucenter.service.VerifyService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Mr.M
@@ -21,6 +22,9 @@ public class LoginController {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    VerifyService verifyService;
 
 
     @RequestMapping("/login-success")
@@ -48,6 +52,10 @@ public class LoginController {
         return "访问r2资源";
     }
 
-
+    @ApiOperation(value = "注册", tags = "注册")
+    @PostMapping("/register")
+    public void register(@RequestBody RegisterDto registerDto) {
+        verifyService.register(registerDto);
+    }
 
 }

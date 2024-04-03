@@ -7,13 +7,13 @@ import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CoursePublish;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
+import com.dango.model.BaseResponse;
+import com.dango.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -24,7 +24,8 @@ import java.util.List;
  * @description
  * @date 2024-03-19
  */
-@Controller
+@RestController
+@Api(tags = "课程发布接口")
 public class CoursePublishController {
 
     @Resource
@@ -33,65 +34,59 @@ public class CoursePublishController {
     @Resource
     private CoursePublishPreService coursePublishPreService;
 
-    // 处理课程预览页面请求
     @GetMapping("/coursepreview/{courseId}")
-    public ModelAndView preview(@PathVariable("courseId") Long courseId){
+    @ApiOperation("课程预览页面")
+    public BaseResponse<CoursePreviewDto> preview(@PathVariable("courseId") Long courseId) {
         CoursePreviewDto coursePreviewDto = coursePublishService.fetchCoursePreviewInfo(courseId);
-
-        // 创建一个新的 ModelAndView 对象
-        ModelAndView modelAndView = new ModelAndView();
-
-        // 将模型对象添加到 ModelAndView 中（这里模型对象为空，可以根据需要添加具体数据）
-        modelAndView.addObject("model", coursePreviewDto);
-
-        // 设置视图名称为 course_template，返回给客户端
-        modelAndView.setViewName("course_template");
-
-        // 返回 ModelAndView 对象
-        return modelAndView;
+        return ResultUtils.success(coursePreviewDto);
     }
 
-    /**
-     * 提交审核
-     *
-     * @param courseId 课程ID
-     */
-    @ResponseBody
     @PostMapping("/courseaudit/commit/{courseId}")
-    public void commitAudit(@PathVariable("courseId") Long courseId) {
+    @ApiOperation("提交审核")
+    public BaseResponse<Boolean> commitAudit(@PathVariable("courseId") Long courseId) {
         // 提交审核逻辑
         Long companyId = 1234L;
-        coursePublishPreService.commitAudit(companyId,courseId);
+        coursePublishPreService.commitAudit(companyId, courseId);
+        return ResultUtils.success(true);
+    }
 
+    @PostMapping("/courseaudit/commit/success/{courseId}")
+    @ApiOperation("审核通过")
+    public BaseResponse<Boolean> commitAuditSuccess(@PathVariable("courseId") Long courseId) {
+        coursePublishPreService.commitAuditSuccess(courseId);
+        return ResultUtils.success(true);
+    }
+
+    @PostMapping("/courseaudit/commit/fail/{courseId}")
+    @ApiOperation("审核未通过")
+    public BaseResponse<Boolean> commitAuditFail(@PathVariable("courseId") Long courseId, @RequestBody(required = false) String content) {
+        coursePublishPreService.commitAuditFail(courseId, content);
+        return ResultUtils.success(true);
     }
 
     @ApiOperation("课程发布")
-    @ResponseBody
-    @PostMapping ("/coursepublish/{courseId}")
-    public void coursepublish(@PathVariable("courseId") Long courseId){
+    @PostMapping("/coursepublish/{courseId}")
+    public BaseResponse<Boolean> coursepublish(@PathVariable("courseId") Long courseId) {
         Long companyId = 1234L;
-        coursePublishService.publish(companyId,courseId);
-
+        coursePublishService.publish(companyId, courseId);
+        return ResultUtils.success(true);
     }
 
     @ApiOperation("查询课程发布信息")
-    @ResponseBody
     @GetMapping("/r/coursepublish/{courseId}")
-    public CoursePublish getCoursepublish(@PathVariable("courseId") Long courseId) {
+    public BaseResponse<CoursePublish> getCoursepublish(@PathVariable("courseId") Long courseId) {
         //查询课程发布信息
         CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
-        return coursePublish;
+        return ResultUtils.success(coursePublish);
     }
 
-
     @ApiOperation("获取课程发布信息")
-    @ResponseBody
     @GetMapping("/course/whole/{courseId}")
-    public CoursePreviewDto getCoursePublish(@PathVariable("courseId") Long courseId) {
+    public BaseResponse<CoursePreviewDto> getCoursePublish(@PathVariable("courseId") Long courseId) {
         //查询课程发布信息
         CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
         if (coursePublish == null) {
-            return new CoursePreviewDto();
+            return ResultUtils.success(new CoursePreviewDto());
         }
 
         //课程基本信息
@@ -102,9 +97,7 @@ public class CoursePublishController {
         CoursePreviewDto coursePreviewInfo = new CoursePreviewDto();
         coursePreviewInfo.setCourseBase(courseBase);
         coursePreviewInfo.setTeachPlans(teachplans);
-        return coursePreviewInfo;
+        return ResultUtils.success(coursePreviewInfo);
     }
-
-
-
 }
+

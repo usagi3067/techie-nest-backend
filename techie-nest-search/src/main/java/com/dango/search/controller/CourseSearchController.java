@@ -1,10 +1,12 @@
 package com.dango.search.controller;
 
+import com.dango.model.BaseResponse;
 import com.dango.model.PageParams;
 import com.dango.search.dto.SearchCourseParamDto;
 import com.dango.search.dto.SearchPageResultDto;
 import com.dango.search.po.CourseIndex;
 import com.dango.search.service.CourseSearchService;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +31,10 @@ public class CourseSearchController {
 
  @ApiOperation("课程搜索列表")
   @GetMapping("/list")
- public SearchPageResultDto<CourseIndex> list(PageParams pageParams, SearchCourseParamDto searchCourseParamDto){
+ public BaseResponse<SearchPageResultDto<CourseIndex>> list(PageParams pageParams, SearchCourseParamDto searchCourseParamDto){
 
-    return courseSearchService.queryCoursePubIndex(pageParams,searchCourseParamDto);
-   
-  }
+  SearchPageResultDto<CourseIndex> courseIndexSearchPageResultDto = courseSearchService.queryCoursePubIndex(pageParams, searchCourseParamDto);
+  return ResultUtils.success(courseIndexSearchPageResultDto);
+
+ }
 }

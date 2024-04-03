@@ -9,29 +9,29 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 /**
- * @description 资源服务配置
  * @author Mr.M
- * @date 2022/10/18 16:33
  * @version 1.0
+ * @description 资源服务配置
+ * @date 2022/10/18 16:33
  */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 
- @Autowired
- private JwtDecoder jwtDecoder;
+    @Autowired
+    private JwtDecoder jwtDecoder;
 
- @Override
- protected void configure(HttpSecurity http) throws Exception {
-  http
-          .oauth2ResourceServer()
-          .jwt()
-          .decoder(jwtDecoder);
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .oauth2ResourceServer()
+                .jwt()
+                .decoder(jwtDecoder);
 
-  http
-          .csrf().disable()
-          .authorizeRequests()
-          .anyRequest().permitAll();
- }
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .anyRequest().permitAll();
+    }
 }

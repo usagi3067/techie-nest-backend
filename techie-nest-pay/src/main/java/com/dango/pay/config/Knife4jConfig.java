@@ -53,13 +53,13 @@ public class Knife4jConfig {
     public Docket defaultApi2() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
-                        .title("学生选课系统接口文档")
-                        .description("techie-nest-learning")
+                        .title("订单管理系统接口文档")
+                        .description("techie-nest-pay")
                         .version("1.0")
                         .build())
                 .select()
                 // 指定 Controller 扫描包路径
-                .apis(RequestHandlerSelectors.basePackage("com.dango.learning.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.dango.pay.controller"))
                 .build();
     }
 }

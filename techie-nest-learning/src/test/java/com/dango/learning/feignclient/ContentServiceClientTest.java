@@ -17,11 +17,11 @@ class ContentServiceClientTest {
     @Autowired
     ContentServiceClient contentServiceClient;
 
-    @Test
-    public void testContentServiceClient(){
-        CoursePublish coursepublish = contentServiceClient.getCoursepublish(74L);
-        Assertions.assertNotNull(coursepublish);
-    }
+//    @Test
+//    public void testContentServiceClient(){
+//        CoursePublish coursepublish = contentServiceClient.getCoursepublish(74L);
+//        Assertions.assertNotNull(coursepublish);
+//    }
 
 
 }

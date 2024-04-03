@@ -2,7 +2,8 @@ package com.dango.learning.controller;
 
 import com.dango.learning.service.LearningService;
 import com.dango.learning.util.SecurityUtil;
-import com.dango.model.RestResponse;
+import com.dango.model.BaseResponse;
+import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -28,15 +29,18 @@ public class MyLearningController {
 
     @ApiOperation("获取视频")
     @GetMapping("/open/learn/getvideo/{courseId}/{teachPlanId}/{mediaId}")
-    public RestResponse<String> getvideo(@PathVariable("courseId") Long courseId, @PathVariable("teachPlanId") Long teachPlanId, @PathVariable("mediaId") String mediaId) {
+    public BaseResponse<String> getvideo(@PathVariable("courseId") Long courseId, @PathVariable("teachPlanId") Long teachPlanId, @PathVariable("mediaId") String mediaId) {
         SecurityUtil.User user = SecurityUtil.getUser();
-
-        String userId = user.getId();
-
+        String userId;
+        if (user == null) {
+            userId = "50";
+        } else {
+            userId = user.getId();
+        }
         //获取视频
-        RestResponse<String> restResponse = learningService.getVideo(userId, courseId, teachPlanId, mediaId);
+        String res = learningService.getVideo(userId, courseId, teachPlanId, mediaId);
 
-        return restResponse;
+        return ResultUtils.success(res);
 
     }
 

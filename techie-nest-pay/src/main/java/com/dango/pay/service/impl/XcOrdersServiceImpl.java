@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.exception.BusinessException;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MqMessageService;
+import com.dango.model.BaseResponse;
 import com.dango.pay.config.AlipayConfig;
 import com.dango.pay.config.PayNotifyConfig;
 import com.dango.pay.domain.dto.AddOrderDto;
@@ -26,6 +27,7 @@ import com.dango.pay.mapper.XcPayRecordMapper;
 import com.dango.pay.service.XcOrdersService;
 import com.dango.utils.IdWorkerUtils;
 import com.dango.utils.QRCodeUtil;
+import com.dango.utils.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -261,7 +263,7 @@ public class XcOrdersServiceImpl extends ServiceImpl<XcOrdersMapper, XcOrders> i
         try {
             response = alipayClient.execute(request);
             if (!response.isSuccess()) {
-                throw new BusinessException("请求支付查询查询失败");
+                throw new BusinessException("请先支付完成下单");
             }
         } catch (AlipayApiException e) {
             log.error("请求支付宝查询支付结果异常:{}", e.toString(), e);

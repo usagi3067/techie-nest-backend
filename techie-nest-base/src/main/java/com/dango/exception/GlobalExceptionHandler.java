@@ -1,15 +1,17 @@
 package com.dango.exception;
 
+import com.dango.model.BaseResponse;
+import com.dango.model.ErrorCode;
+import com.dango.utils.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +35,9 @@ public class GlobalExceptionHandler {
      * @return 统一格式的错误响应
      */
     @ExceptionHandler(BusinessException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleBusinessException(BusinessException e) {
+    public BaseResponse handleBusinessException(BusinessException e) {
         log.error("业务异常: {}", e.getErrMessage());
-        return new ErrorResponse(e.getErrMessage());
+        return ResultUtils.error(e.getCode(), e.getErrMessage());
     }
 
     /**
@@ -47,14 +48,13 @@ public class GlobalExceptionHandler {
      * @return 统一格式的错误响应，包含所有参数校验错误信息
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public BaseResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         List<String> msgList = new ArrayList<>();
         bindingResult.getFieldErrors().forEach(item -> msgList.add(item.getDefaultMessage()));
         String msg = StringUtils.join(msgList, ",");
         log.error("参数校验异常: {}", msg);
-        return new ErrorResponse(msg);
+        return ResultUtils.error(ErrorCode.PARAMS_ERROR);
     }
 
     /**
@@ -65,10 +65,17 @@ public class GlobalExceptionHandler {
      * @return 统一格式的错误响应
      */
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(Exception e) {
+    public BaseResponse handleException(Exception e) {
         log.error("系统异常: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+        return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(AccessDeniedException.class) // 特定处理没有权限的异常
+    public BaseResponse handleAccessDeniedException(AccessDeniedException e) {
+        log.error("【权限异常】{}", e.getMessage(), e);
+        // 返回一个具体的错误信息表示没有权限
+        return ResultUtils.error(ErrorCode.NO_AUTH_ERROR);
     }
 }
 
