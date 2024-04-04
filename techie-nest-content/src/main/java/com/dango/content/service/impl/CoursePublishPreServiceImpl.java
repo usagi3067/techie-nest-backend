@@ -6,9 +6,9 @@ import com.dango.content.mapper.CourseBaseMapper;
 import com.dango.content.mapper.CourseMarketMapper;
 import com.dango.content.mapper.CoursePublishPreMapper;
 import com.dango.content.model.dto.CourseBaseInfoDto;
-import com.dango.content.model.dto.CourseMarket;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CourseBase;
+import com.dango.content.model.entity.CourseMarket;
 import com.dango.content.model.entity.CoursePublishPre;
 import com.dango.content.service.CourseBaseService;
 import com.dango.content.service.CoursePublishPreService;
@@ -48,11 +48,11 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
     /**
      * 提交课程审核
      *
-     * @param companyId 机构ID
+     * @param lecturerId 讲师id
      * @param courseId  课程ID
      */
     @Override
-    public void commitAudit(Long companyId, Long courseId) {
+    public void commitAudit(Long lecturerId, Long courseId) {
 
         // 查询课程基本信息
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
@@ -65,8 +65,8 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
             throw new BusinessException("当前为等待审核状态，审核完成可以再次提交。");
         }
 
-        // 只允许提交本机构的课程
-        if (!courseBase.getCompanyId().equals(companyId)) {
+        // 只允许提交讲师自己的课程
+        if (!courseBase.getLecturerId().equals(lecturerId)) {
             throw new BusinessException("不允许提交其它机构的课程。");
         }
 
@@ -105,7 +105,7 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         coursePublishPre.setStatus(CourseAuditStatus.SUBMITTED.getCode());
 
         // 设置教学机构id
-        coursePublishPre.setCompanyId(companyId);
+        coursePublishPre.setCompanyId(lecturerId);
 
         // 设置提交时间
         coursePublishPre.setCreateDate(LocalDateTime.now());

@@ -4,11 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dango.content.mapper.CourseMarketMapper">
 
-    <resultMap id="BaseResultMap" type="com.dango.content.model.dto.CourseMarket">
+    <resultMap id="BaseResultMap" type="com.dango.content.model.entity.CourseMarket">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="charge" column="charge" jdbcType="VARCHAR"/>
-            <result property="price" column="price" jdbcType="FLOAT"/>
+            <result property="isFree" column="is_free" jdbcType="TINYINT"/>
             <result property="originalPrice" column="original_price" jdbcType="FLOAT"/>
+            <result property="price" column="price" jdbcType="FLOAT"/>
             <result property="qq" column="qq" jdbcType="VARCHAR"/>
             <result property="wechat" column="wechat" jdbcType="VARCHAR"/>
             <result property="phone" column="phone" jdbcType="VARCHAR"/>
@@ -16,8 +16,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,charge,price,
-        original_price,qq,wechat,
+        id,is_free,original_price,
+        price,qq,wechat,
         phone,valid_days
     </sql>
 </mapper>

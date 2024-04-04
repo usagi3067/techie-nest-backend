@@ -72,8 +72,8 @@ public class CourseBaseInfoController {
     @ApiOperation("修改课程基本信息")
     @PutMapping("/course")
     public BaseResponse<CourseBaseInfoDto> updateCourseBase(@RequestBody @Validated EditCourseDto editCourseDto) {
-        Long companyId = 1234L;
-        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(companyId, editCourseDto);
+        Long lecturerId = 1234L;
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(lecturerId, editCourseDto);
         return ResultUtils.success(courseBaseInfoDto);
     }
 

@@ -28,58 +28,46 @@ public class CourseBase implements Serializable {
     private String name;
 
     /**
-     * 机构名称
+     * 讲师名称
      */
-    @TableField(value = "company_name")
-    private String companyName;
+    @TableField(value = "lecturer_name")
+    private String lecturerName;
 
     /**
-     * 机构id
+     * 讲师id
      */
-    @TableField(value = "company_id")
-    private Long companyId;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
 
     /**
-     * 适用人群
-     */
-    @TableField(value = "users")
-    private String users;
-
-    /**
-     * 课程标签
+     * 课程标签(json数组)
      */
     @TableField(value = "tags")
     private String tags;
 
     /**
-     * 大分类
+     * 主分类
      */
-    @TableField(value = "mt")
-    private String mt;
+    @TableField(value = "main_category")
+    private String mainCategory;
 
     /**
-     * 小分类
+     * 子分类
      */
-    @TableField(value = "st")
-    private String st;
-
-    /**
-     * 课程等级
-     */
-    @TableField(value = "grade")
-    private String grade;
-
-    /**
-     * 授课模式(common普通, record录播, live直播)
-     */
-    @TableField(value = "teach_mode")
-    private String teachMode;
+    @TableField(value = "sub_category")
+    private String subCategory;
 
     /**
      * 课程介绍
      */
     @TableField(value = "description")
     private String description;
+
+    /**
+     * 预备知识
+     */
+    @TableField(value = "pre_knowledge")
+    private String preKnowledge;
 
     /**
      * 课程图片
@@ -100,34 +88,16 @@ public class CourseBase implements Serializable {
     private LocalDateTime dateUpdated;
 
     /**
-     * 创建人
-     */
-    @TableField(value = "created_by")
-    private String createdBy;
-
-    /**
-     * 更新人
-     */
-    @TableField(value = "updated_by")
-    private String updatedBy;
-
-    /**
-     * 是否删除
-     */
-    @TableField(value = "is_delete")
-    private Integer isDelete;
-
-    /**
-     * 审核状态
+     * 审核状态（10001:审核未通过 10002审核通过 10003已提交 10004未提交）
      */
     @TableField(value = "audit_status")
     private String auditStatus;
 
     /**
-     * 课程状态(1:未发布, 2:已发布, 3: 下线)
+     * 发布状态(20001:未发布, 20002:已发布, 20003:下线)
      */
-    @TableField(value = "status")
-    private String status;
+    @TableField(value = "publish_status")
+    private String publishStatus;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

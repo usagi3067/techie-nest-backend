@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 
 /**
  * @author dango
@@ -16,33 +17,19 @@ import javax.validation.constraints.Size;
 @Data
 @ApiModel(value="AddCourseDto", description="新增课程基本信息")
 public class AddCourseDto {
-    @NotEmpty(groups = {ValidationGroups.Inster.class},message = "添加课程名称不能为空")
-    @NotEmpty(groups = {ValidationGroups.Update.class},message = "修改课程名称不能为空")
     @ApiModelProperty(value = "课程名称", required = true)
     private String name;
 
-    @NotEmpty(message = "适用人群不能为空")
-    @ApiModelProperty(value = "适用人群", required = true)
-    @Size(message = "适用人群内容过少", min = 10)
-    private String users;
-
     @ApiModelProperty(value = "课程标签")
-    private String tags;
+    private ArrayList<String> tags;
 
     @NotEmpty(message = "课程大分类不能为空")
     @ApiModelProperty(value = "课程大分类", required = true)
-    private String mt;
+    private String mainCategory;
 
     @NotEmpty(message = "课程小分类不能为空")
     @ApiModelProperty(value = "课程小分类", required = true)
-    private String st;
-
-    @NotEmpty(message = "课程等级不能为空")
-    @ApiModelProperty(value = "课程等级", required = true)
-    private String grade;
-
-    @ApiModelProperty(value = "教学模式（普通、 录播、 直播等）", required = true)
-    private String teachMode;
+    private String subCategory;
 
     @ApiModelProperty(value = "课程介绍")
     private String description;
@@ -50,9 +37,12 @@ public class AddCourseDto {
     @ApiModelProperty(value = "课程封面", required = true)
     private String pic;
 
-    @NotEmpty(message = "收费规则不能为空")
-    @ApiModelProperty(value = "收费规则, 对应数据字典", required = true)
-    private String charge;
+    @ApiModelProperty(value = "预备知识")
+    private String preKnowledge;
+
+    @NotEmpty(message = "是否收费")
+    @ApiModelProperty(value = "是否收费", required = true)
+    private Integer isFree;
 
     @ApiModelProperty(value = "课程价格", required = true)
     private Double price;
@@ -71,5 +61,4 @@ public class AddCourseDto {
 
     @ApiModelProperty(value = "有效期")
     private Integer validDays;
-
 }

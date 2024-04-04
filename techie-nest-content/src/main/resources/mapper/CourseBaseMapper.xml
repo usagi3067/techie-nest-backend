@@ -7,32 +7,25 @@
     <resultMap id="BaseResultMap" type="com.dango.content.model.entity.CourseBase">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="companyName" column="company_name" jdbcType="VARCHAR"/>
-            <result property="companyId" column="company_id" jdbcType="BIGINT"/>
-            <result property="users" column="users" jdbcType="VARCHAR"/>
+            <result property="lecturerName" column="lecturer_name" jdbcType="VARCHAR"/>
+            <result property="lecturerId" column="lecturer_id" jdbcType="BIGINT"/>
             <result property="tags" column="tags" jdbcType="VARCHAR"/>
-            <result property="mt" column="mt" jdbcType="VARCHAR"/>
-            <result property="st" column="st" jdbcType="VARCHAR"/>
-            <result property="grade" column="grade" jdbcType="VARCHAR"/>
-            <result property="teachMode" column="teach_mode" jdbcType="VARCHAR"/>
+            <result property="mainCategory" column="main_category" jdbcType="VARCHAR"/>
+            <result property="subCategory" column="sub_category" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="preKnowledge" column="pre_knowledge" jdbcType="VARCHAR"/>
             <result property="pic" column="pic" jdbcType="VARCHAR"/>
             <result property="dateCreated" column="date_created" jdbcType="TIMESTAMP"/>
             <result property="dateUpdated" column="date_updated" jdbcType="TIMESTAMP"/>
-            <result property="createdBy" column="created_by" jdbcType="VARCHAR"/>
-            <result property="updatedBy" column="updated_by" jdbcType="VARCHAR"/>
-            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
             <result property="auditStatus" column="audit_status" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="publishStatus" column="publish_status" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,company_name,
-        company_id,users,tags,
-        mt,st,grade,
-        teach_mode,description,pic,
-        date_created,date_updated,created_by,
-        updated_by,is_delete,audit_status,
-        status
+        id,name,lecturer_name,
+        lecturer_id,tags,main_category,
+        sub_category,description,pre_knowledge,
+        pic,date_created,date_updated,
+        audit_status,publish_status
     </sql>
 </mapper>

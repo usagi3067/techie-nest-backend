@@ -12,10 +12,10 @@ public interface CoursePublishPreService extends IService<CoursePublishPre> {
     /**
      * 提交课程审核
      *
-     * @param companyId 机构ID
+     * @param lecturerId 讲师id
      * @param courseId  课程ID
      */
-    void commitAudit(Long companyId, Long courseId);
+    void commitAudit(Long lecturerId, Long courseId);
 
     void commitAuditSuccess(Long courseId);
 

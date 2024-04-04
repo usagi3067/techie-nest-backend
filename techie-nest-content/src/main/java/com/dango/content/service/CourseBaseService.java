@@ -22,15 +22,15 @@ public interface CourseBaseService extends IService<CourseBase> {
      * @param queryCoursePageDto 查询条件
      * @return 课程列表
      */
-    PageResult<CourseBase> queryCoursePageList(Long companyId, PageParams pageParam, QueryCoursePageDto queryCoursePageDto);
+    PageResult<CourseBase> queryCoursePageList(Long lecturerId, PageParams pageParam, QueryCoursePageDto queryCoursePageDto);
 
     /**
      * 添加课程详细信息
-     * @param companyId 机构id
+     * @param lecturerId 讲师id
      * @param addCourseDto 课程详细信息
      * @return 课程详细信息
      */
-    CourseBaseInfoDto addCourseBase(Long companyId, AddCourseDto addCourseDto);
+    CourseBaseInfoDto addCourseBase(Long lecturerId, AddCourseDto addCourseDto);
 
 
     /**
@@ -42,12 +42,12 @@ public interface CourseBaseService extends IService<CourseBase> {
 
     /**
      * 更新课程基本信息
-     * @param companyId 机构id
+     * @param lecturerId 讲师id
      * @param dto 课程基本信息
      * @return 课程基本信息
      */
-    CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto dto);
+    CourseBaseInfoDto updateCourseBase(Long lecturerId, EditCourseDto dto);
 
-    Boolean deleteCourse(Long companyId, Long courseId);
+    Boolean deleteCourse(Long lecturerId, Long courseId);
 
 }

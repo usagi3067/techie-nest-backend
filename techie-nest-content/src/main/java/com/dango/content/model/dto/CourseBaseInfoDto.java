@@ -3,6 +3,9 @@ package com.dango.content.model.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author dango
  * @description 课程信息响应 Dto
@@ -16,30 +19,20 @@ public class CourseBaseInfoDto {
     @ApiModelProperty("课程名称")
     private String name;
 
-    @ApiModelProperty("机构名称")
-    private String companyName;
+    @ApiModelProperty("讲师名称")
+    private String lecturerName;
 
-    @ApiModelProperty("机构id")
-    private Long companyId;
-
-    @ApiModelProperty("适用人群")
-    private String users;
+    @ApiModelProperty("讲师id")
+    private Long lecturerId;
 
     @ApiModelProperty("课程标签")
-    private String tags;
+    private List<String> tags;
 
-    @ApiModelProperty("大分类")
-    private String mt;
+    @ApiModelProperty("主分类")
+    private String mainCategory;
 
-    @ApiModelProperty("小分类")
-    private String st;
-
-    @ApiModelProperty("课程等级")
-    private String grade;
-
-    //todo 需要改大驼峰
-    @ApiModelProperty("教学模式（普通、 录播、 直播等）")
-    private String teachMode;
+    @ApiModelProperty("次分类")
+    private String subCategory;
 
     @ApiModelProperty("课程介绍")
     private String description;
@@ -47,23 +40,17 @@ public class CourseBaseInfoDto {
     @ApiModelProperty("课程封面")
     private String pic;
 
-    @ApiModelProperty("创建人")
-    private String createdBy;
-
-    @ApiModelProperty("更新人")
-    private String updatedBy;
-
-    @ApiModelProperty("是否删除")
-    private Integer isDelete;
+    @ApiModelProperty("预备知识")
+    private String preKnowledge;
 
     @ApiModelProperty("审核状态")
     private String auditStatus;
 
     @ApiModelProperty("发布状态")
-    private String status;
+    private String publishStatus;
 
     @ApiModelProperty("收费规则")
-    private String charge;
+    private Integer isFree;
 
     @ApiModelProperty("课程价格")
     private Double price;

@@ -1,6 +1,5 @@
-package com.dango.content.model.dto;
+package com.dango.content.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -21,22 +20,22 @@ public class CourseMarket implements Serializable {
     private Long id;
 
     /**
-     * 收费规则，对应数据字典
+     * 是否免费(1: 免费, 0: 收费)
      */
-    @TableField(value = "charge")
-    private String charge;
-
-    /**
-     * 现价
-     */
-    @TableField(value = "price")
-    private Double price;
+    @TableField(value = "is_free")
+    private Integer isFree;
 
     /**
      * 原价
      */
     @TableField(value = "original_price")
     private Double originalPrice;
+
+    /**
+     * 现价
+     */
+    @TableField(value = "price")
+    private Double price;
 
     /**
      * 咨询qq
