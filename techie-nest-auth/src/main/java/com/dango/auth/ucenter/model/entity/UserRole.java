@@ -18,20 +18,20 @@ public class UserRole implements Serializable {
     /**
      * 
      */
-    @TableId(value = "id")
-    private String id;
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    private Long id;
 
     /**
      * 
      */
     @TableField(value = "user_id")
-    private String userId;
+    private Long userId;
 
     /**
      * 
      */
     @TableField(value = "role_id")
-    private String roleId;
+    private Long roleId;
 
     /**
      * 

@@ -1,33 +1,39 @@
 DROP TABLE IF EXISTS `course_publish`;
 
-CREATE TABLE `course_publish`
+-- auto-generated definition
+create table course_publish
 (
-    `id`             bigint       NOT NULL COMMENT '主键',
-    `company_id`     bigint       NOT NULL COMMENT '机构ID',
-    `company_name`   varchar(255) DEFAULT NULL COMMENT '公司名称',
-    `name`           varchar(100) NOT NULL COMMENT '课程名称',
-    `users`          varchar(500) NOT NULL COMMENT '适用人群',
-    `tags`           varchar(32)  DEFAULT NULL COMMENT '标签',
-    `username`       varchar(32)  DEFAULT NULL COMMENT '创建人',
-    `mt`             varchar(20)  NOT NULL COMMENT '大分类',
-    `mt_name`        varchar(255) NOT NULL COMMENT '大分类名称',
-    `st`             varchar(20)  NOT NULL COMMENT '小分类',
-    `st_name`        varchar(255) NOT NULL COMMENT '小分类名称',
-    `grade`          varchar(32)  NOT NULL COMMENT '课程等级',
-    `teach_mode`     varchar(32)  NOT NULL COMMENT '教育模式',
-    `pic`            varchar(500) NOT NULL COMMENT '课程图片',
-    `description`    text COMMENT '课程介绍',
-    `market`         text COMMENT '课程营销信息，json格式',
-    `teach_plan`     text COMMENT '所有课程计划，json格式',
-    `teachers`       text COMMENT '教师信息，json格式',
-    `create_date`    datetime     DEFAULT NULL COMMENT '发布时间',
-    `online_date`    datetime     DEFAULT NULL COMMENT '上架时间',
-    `offline_date`   datetime     DEFAULT NULL COMMENT '下架时间',
-    `status`         varchar(10)  DEFAULT '1' COMMENT '发布状态',
-    `remark`         varchar(500) DEFAULT NULL COMMENT '备注',
-    `charge`         varchar(32)  DEFAULT NULL COMMENT '收费规则，对应数据字典--203',
-    `price`          float(10, 2) DEFAULT NULL COMMENT '现价',
-    `original_price` float(10, 2) DEFAULT NULL COMMENT '原价',
-    `valid_days`     int          DEFAULT NULL COMMENT '课程有效期天数',
-    PRIMARY KEY (`id`) USING BTREE
-) COMMENT ='课程发布';
+    id                   bigint        not null comment '主键'
+        primary key,
+    name                 varchar(512)  not null comment '课程名称',
+    tags                 varchar(1024) null comment '标签(json格式)',
+    lecturer_id          bigint        not null comment '讲师ID',
+    lecturer_name        varchar(512)  null comment '讲师名称',
+    main_category        varchar(512)  not null comment '大分类',
+    `main_category_name` varchar(512)  NOT NULL COMMENT '主分类名称',
+    `sub_category`       varchar(512)  NOT NULL COMMENT '次分类',
+    `sub_category_name`  varchar(512)  NOT NULL COMMENT '次分类名称',
+    pic                  varchar(1024)  not null comment '课程图片',
+    description          text          null comment '课程介绍',
+    `pre_knowledge`      text          null comment '预备知识',
+    market               text          null comment '课程营销信息，json格式',
+    teach_plan           text          null comment '所有课程计划，json格式',
+    lecturer_info        text          null comment '讲师信息',
+    `publish_date`       datetime      NOT NULL COMMENT '发布时间',
+    offline_date         datetime      null comment '下架时间',
+    status               varchar(10)   null comment '发布状态(20001:未发布, 20002:已发布, 20003:下线)',
+    remark               varchar(512)  null comment '备注',
+    is_free              tinyint       not null comment '是否免费(1: 免费, 0: 收费)',
+    price                double(11, 2) null comment '现价',
+    original_price       double(11, 2) null comment '原价',
+    valid_days           int           null comment '课程有效期天数',
+    `count_buy`          int           NOT NULL DEFAULT 0 COMMENT '购买人数',
+    `count_study`        int           NOT NULL DEFAULT 0 COMMENT '学习人数'
+)
+    comment '课程发布';
+
+
+SELECT id,name,tags,lecturer_id,lecturer_name,main_category,main_category_name,sub_category,sub_category_name,pic,description,pre_knowledge,market,teach_plan,lecturer_info,publish_date,offline_date,status,remark,is_free,price,original_price,valid_days,count_buy,count_study
+FROM course_publish
+WHERE (is_free = 0) ORDER BY count_study DESC
+LIMIT 10;

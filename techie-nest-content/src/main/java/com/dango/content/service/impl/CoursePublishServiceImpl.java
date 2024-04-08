@@ -1,5 +1,8 @@
 package com.dango.content.service.impl;
 
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.config.MultipartSupportConfig;
 import com.dango.content.feignclient.MediaServiceClient;
@@ -8,6 +11,7 @@ import com.dango.content.mapper.CoursePublishMapper;
 import com.dango.content.mapper.CoursePublishPreMapper;
 import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.model.dto.HomePageDisplayDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.model.entity.CoursePublish;
@@ -19,6 +23,8 @@ import com.dango.exception.BusinessException;
 import com.dango.exception.CommonError;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MqMessageService;
+import com.dango.model.state.CourseAuditStatus;
+import com.dango.model.state.CourseFeeStatus;
 import com.dango.model.state.CoursePublishStatus;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -34,9 +40,11 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author dango
@@ -46,7 +54,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, CoursePublish>
-    implements CoursePublishService{
+    implements CoursePublishService {
 
     @Resource
     private CourseBaseService courseBaseService;
@@ -90,7 +98,7 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
 
     @Transactional
     @Override
-    public void publish(Long companyId, Long courseId) {
+    public void publish(Long lecturerId, Long courseId) {
         // 约束校验
         // 查询课程预发布表
         CoursePublishPre coursePublishPre = coursePublishPreMapper.selectById(courseId);
@@ -98,15 +106,15 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
             throw new BusinessException("请先提交课程审核，审核通过才可以发布");
         }
 
-        // 本机构只允许提交本机构的课程
-        if (!coursePublishPre.getCompanyId().equals(companyId)) {
-            throw new BusinessException("不允许提交其他机构的课程");
+        // 教学人员只允许提交自己的课程
+        if (!coursePublishPre.getLecturerId().equals(lecturerId)) {
+            throw new BusinessException("不允许提交其他讲师的课程");
         }
 
         // 课程审核状态
         String auditStatus = coursePublishPre.getStatus();
         // 审核通过方可发布
-        if (!"202004".equals(auditStatus)) {
+        if (!CourseAuditStatus.APPROVED.getCode().equals(auditStatus)) {
             throw new BusinessException("操作失败，课程审核通过方可发布");
         }
 
@@ -199,10 +207,58 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
         return coursePublish ;
     }
 
+    @Override
+    public Boolean updateCourseStudyCount(Long countId) {
+        baseMapper.incrementCountStudy(countId);
+
+        return true;
+    }
+
+    @Override
+    public HomePageDisplayDto display() {
+        HomePageDisplayDto res = new HomePageDisplayDto();
+        // 在课程发布表中查询最新发布的课程 id
+        LambdaQueryWrapper<CoursePublish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(CoursePublish::getPublishDate)
+                .last("LIMIT 10");
+        List<CoursePublish> coursePublishes = baseMapper.selectList(queryWrapper);
+        List<Long> newIds = coursePublishes.stream()
+                .map(CoursePublish::getId)
+                .collect(Collectors.toList());
+        res.setNewIds(newIds);
+
+        // 在课程发布表中查询热门收费的课程 id
+        LambdaQueryWrapper<CoursePublish> queryWrapper2 = Wrappers.lambdaQuery();
+        queryWrapper2.eq(CoursePublish::getIsFree, CourseFeeStatus.PAID.getCode()) // 查询收费课程
+                .orderByDesc(CoursePublish::getCountStudy) // 按照学习人数降序排序
+                .last("LIMIT 10"); // 只取前10个热门课程
+
+        List<CoursePublish> hotPaidCourses = baseMapper.selectList(queryWrapper2);
+
+        List<Long> hotPaidIds = hotPaidCourses.stream()
+                .map(CoursePublish::getId)
+                .collect(Collectors.toList());
+        res.setHotPaidIds(hotPaidIds);
+
+        // 在课程发布表中查询免费收费的课程 id
+        LambdaQueryWrapper<CoursePublish> queryWrapper3 = Wrappers.lambdaQuery();
+        queryWrapper3.eq(CoursePublish::getIsFree, CourseFeeStatus.FREE.getCode()) // 查询免费课程
+                .orderByDesc(CoursePublish::getCountStudy) // 按照学习人数降序排序
+                .last("LIMIT 10"); // 只取前10个热门课程
+
+        List<CoursePublish> hotFreeCourses = baseMapper.selectList(queryWrapper3);
+
+        List<Long> hotFreeIds = hotFreeCourses.stream()
+                .map(CoursePublish::getId)
+                .collect(Collectors.toList());
+        res.setHotFreeIds(hotFreeIds);
+
+        return res;
+    }
 
 
     /**
-     * 保存课程发布信息
+     * 保存课程发布信息 todo
      * @param courseId  课程ID
      */
     private void saveCoursePublishInfo(Long courseId) {
@@ -219,9 +275,12 @@ public class CoursePublishServiceImpl extends ServiceImpl<CoursePublishMapper, C
         BeanUtils.copyProperties(coursePublishPre, coursePublish);
         coursePublish.setStatus(CoursePublishStatus.PUBLISHED.getCode());
         CoursePublish coursePublishUpdate = baseMapper.selectById(courseId);
+        coursePublish.setPublishDate(LocalDateTime.now());
         if (coursePublishUpdate == null) {
             baseMapper.insert(coursePublish);
         } else {
+            coursePublish.setCountBuy(coursePublishUpdate.getCountBuy());
+            coursePublish.setCountStudy(coursePublishUpdate.getCountStudy());
             baseMapper.updateById(coursePublish);
         }
 

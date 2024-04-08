@@ -21,12 +21,6 @@ public class Teacher implements Serializable {
     private String id;
 
     /**
-     * 用户id
-     */
-    @TableField(value = "user_id")
-    private String userId;
-
-    /**
      * 称呼
      */
     @TableField(value = "name")

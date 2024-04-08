@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
@@ -40,7 +41,7 @@ public class AddCourseDto {
     @ApiModelProperty(value = "预备知识")
     private String preKnowledge;
 
-    @NotEmpty(message = "是否收费")
+    @NotNull(message = "是否收费不能为空")
     @ApiModelProperty(value = "是否收费", required = true)
     private Integer isFree;
 

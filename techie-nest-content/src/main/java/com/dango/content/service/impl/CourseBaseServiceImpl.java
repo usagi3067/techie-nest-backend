@@ -82,6 +82,7 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
     public CourseBaseInfoDto addCourseBase(Long lecturerId, AddCourseDto addCourseDto) {
         CourseBase courseBase = new CourseBase();
         BeanUtils.copyProperties(addCourseDto, courseBase);
+        courseBase.setTags(JSON.toJSONString(addCourseDto.getTags()));
         // 设置审核状态
         courseBase.setAuditStatus(CourseAuditStatus.NOT_SUBMITTED.getCode());
         // 设置发布状态
@@ -125,10 +126,10 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
             BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
         }
         // 补充分类名称
-        String mtName = courseCategoryMapper.selectById(courseBase.getMainCategory()).getName();
-        String stName = courseCategoryMapper.selectById(courseBase.getSubCategory()).getName();
-        courseBaseInfoDto.setMtName(mtName);
-        courseBaseInfoDto.setStName(stName);
+        String mainCategoryName = courseCategoryMapper.selectById(courseBase.getMainCategory()).getName();
+        String subCategoryName = courseCategoryMapper.selectById(courseBase.getSubCategory()).getName();
+        courseBaseInfoDto.setMainCategoryName(mainCategoryName);
+        courseBaseInfoDto.setSubCategoryName(subCategoryName);
 
         return courseBaseInfoDto;
     }
@@ -181,6 +182,27 @@ public class CourseBaseServiceImpl extends ServiceImpl<CourseBaseMapper, CourseB
         baseMapper.deleteById(courseId);
 
         return true;
+    }
+
+    @Override
+    public PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageDto queryCoursePageDto) {
+        // 1. 构建查询对象
+        LambdaQueryWrapper<CourseBase> queryWrapper = new LambdaQueryWrapper<>();
+        // 1.1 课程名称模糊查询
+        queryWrapper.like(StringUtils.isNotBlank(queryCoursePageDto.getCourseName()), CourseBase::getName, queryCoursePageDto.getCourseName());
+        // 1.2 课程审核状态精确查询
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getAuditStatus()), CourseBase::getAuditStatus, queryCoursePageDto.getAuditStatus());
+        // 1.3 课程发布状态精确查询
+        queryWrapper.eq(StringUtils.isNotBlank(queryCoursePageDto.getPublishStatus()), CourseBase::getPublishStatus, queryCoursePageDto.getPublishStatus());
+
+        // 2. 分页查询
+        // 2.1 构建分页对象
+        Page<CourseBase> page = new Page<>(pageParam.getPageNo(), pageParam.getPageSize());
+        // 2.2 分页查询
+        Page<CourseBase> res = baseMapper.selectPage(page, queryWrapper);
+        // 2.3 封装结果
+        return new PageResult<>(res.getRecords(), res.getTotal(), pageParam.getPageNo(), pageParam.getPageSize());
+
     }
 
     private void saveCourseMarket(CourseMarket courseMarket) {

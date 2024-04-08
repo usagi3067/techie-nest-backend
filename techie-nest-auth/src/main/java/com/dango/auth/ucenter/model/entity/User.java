@@ -18,8 +18,8 @@ public class User implements Serializable {
     /**
      * 
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    @TableId(value = "id")
+    private Long id;
 
     /**
      * 
@@ -46,13 +46,7 @@ public class User implements Serializable {
     private String userPic;
 
     /**
-     * 
-     */
-    @TableField(value = "company_id")
-    private String companyId;
-
-    /**
-     * 1为学生， 2未用户
+     * 1为学生， 2为老师， 3为管理员
      */
     @TableField(value = "u_type")
     private Integer uType;
@@ -91,7 +85,7 @@ public class User implements Serializable {
      * 用户状态
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 

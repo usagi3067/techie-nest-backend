@@ -5,15 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.exception.BusinessException;
 import com.dango.media.mapper.MediaFilesMapper;
-import com.dango.media.mapper.MediaProcessMapper;
 import com.dango.media.model.dto.QueryMediaParamsDto;
 import com.dango.media.model.dto.UploadFileParamsDto;
 import com.dango.media.model.dto.UploadFileResultDto;
 import com.dango.media.model.entity.MediaFiles;
-import com.dango.media.model.entity.MediaProcess;
 import com.dango.media.service.MediaFilesService;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
+import com.dango.model.state.CourseAuditStatus;
 import com.j256.simplemagic.ContentInfo;
 import com.j256.simplemagic.ContentInfoUtil;
 import io.minio.*;
@@ -56,8 +55,8 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     @Resource
     private MinioClient minioClient;
 
-    @Resource
-    private MediaProcessMapper mediaProcessMapper;
+//    @Resource
+//    private MediaProcessMapper mediaProcessMapper;
 
     @Autowired
     MediaFilesService currentProxy;
@@ -72,13 +71,13 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     /**
      * 上传文件
      *
-     * @param companyId           公司ID
+     * @param lecturerId           机构ID
      * @param uploadFileParamsDto 上传文件的参数
      * @param localFilePath       文件在本地的路径
      * @return UploadFileResultDto 上传文件结果的数据传输对象
      */
     @Override
-    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String objectName) {
+    public UploadFileResultDto uploadFile(Long lecturerId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String objectName) {
         File file = new File(localFilePath);
         // 检查文件是否存在
         if (!file.exists()) {
@@ -101,7 +100,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
 
         // 设置文件大小并保存文件信息到数据库
         uploadFileParamsDto.setFileSize(file.length());
-        MediaFiles mediaFiles = addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucketFiles, objectName);
+        MediaFiles mediaFiles = addMediaFilesToDb(lecturerId, fileMd5, uploadFileParamsDto, bucketFiles, objectName);
 
         // 构造返回结果
         UploadFileResultDto uploadFileResultDto = new UploadFileResultDto();
@@ -110,10 +109,10 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     }
 
     @Override
-    public PageResult<MediaFiles> queryMediaFiles(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto) {
+    public PageResult<MediaFiles> queryMediaFiles(Long lecturerId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto) {
         //构建查询条件对象
         LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MediaFiles::getCompanyId, companyId)
+        queryWrapper.eq(MediaFiles::getLecturerId, lecturerId)
                 .eq(queryMediaParamsDto.getAuditStatus() != null, MediaFiles::getAuditStatus, queryMediaParamsDto.getAuditStatus())
                 .eq(StringUtils.isNotBlank(queryMediaParamsDto.getFileType()), MediaFiles::getFileType, queryMediaParamsDto.getFileType())
                 .like(StringUtils.isNotBlank(queryMediaParamsDto.getFilename()), MediaFiles::getFilename, queryMediaParamsDto.getFilename());
@@ -133,7 +132,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     /**
      * 将文件信息保存到数据库
      *
-     * @param companyId           公司ID
+     * @param lecturerId           机构ID
      * @param fileMd5             文件的MD5值
      * @param uploadFileParamsDto 上传文件的参数
      * @param bucket              存储桶名称
@@ -142,25 +141,23 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
      */
     @Transactional
     @Override
-    public MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName) {
+    public MediaFiles addMediaFilesToDb(Long lecturerId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName) {
         // 查询文件是否已存在
         LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MediaFiles::getFileId, fileMd5);
-        queryWrapper.eq(MediaFiles::getCompanyId, companyId);
+        queryWrapper.eq(MediaFiles::getLecturerId, lecturerId);
         MediaFiles mediaFiles = baseMapper.selectOne(queryWrapper);
         if (Objects.isNull(mediaFiles)) {
             mediaFiles = new MediaFiles();
             BeanUtils.copyProperties(uploadFileParamsDto, mediaFiles);
             mediaFiles.setId(fileMd5);
             mediaFiles.setFileId(fileMd5);
-            mediaFiles.setCompanyId(companyId);
+            mediaFiles.setLecturerId(lecturerId);
             mediaFiles.setUrl("/" + bucket + "/" + objectName);
             mediaFiles.setBucket(bucket);
             mediaFiles.setFilePath(objectName);
-            mediaFiles.setCreateDate(LocalDateTime.now());
             // 这里设置初始审核状态和文件状态，可根据实际业务调整
-            mediaFiles.setAuditStatus("002003"); // 待审核
-            mediaFiles.setStatus("1"); // 正常状态
+            mediaFiles.setAuditStatus(CourseAuditStatus.APPROVED.getCode()); // 待审核
 
             // 插入媒资信息到数据库
             int insert = baseMapper.insert(mediaFiles);
@@ -170,34 +167,13 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
             }
             log.info("保存文件信息到数据库成功，{}", mediaFiles);
 
-            addWaitingTask(mediaFiles);
-            log.info("保存媒体文件信息到待处理表成功, mediaFiles={}", mediaFiles);
+//            addWaitingTask(mediaFiles);
+//            log.info("保存媒体文件信息到待处理表成功, mediaFiles={}", mediaFiles);
         }
         return mediaFiles;
     }
 
-    /**
-     * 添加媒体文件到待处理表中  目前只支持 avi文件格式
-     *
-     * @param mediaFiles 媒体文件
-     */
-    private void addWaitingTask(MediaFiles mediaFiles) {
-        //文件名称
-        String filename = mediaFiles.getFilename();
-        //文件扩展名
-        String extension = filename.substring(filename.lastIndexOf("."));
-        //文件mimeType
-        String mimeType = getMimeType(extension);
-        //如果是avi视频添加到视频待处理表
-        if (mimeType.equals("video/x-msvideo")) {
-            MediaProcess mediaProcess = new MediaProcess();
-            BeanUtils.copyProperties(mediaFiles, mediaProcess);
-            mediaProcess.setStatus("1");//未处理
-            mediaProcess.setFailCount(0);//失败次数默认为0
-            mediaProcessMapper.insert(mediaProcess);
-        }
 
-    }
 
     /**
      * 获取文件的MD5值
@@ -331,7 +307,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
     }
 
     @Override
-    public Boolean mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto) {
+    public Boolean mergechunks(long lecturerId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto) {
         //分块文件所在目录
         String chunkFileFolderPath = getChunkFileFolderPath(fileMd5);
         //找到所有的分块文件
@@ -376,7 +352,7 @@ public class MediaFilesServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFi
         }
 
         //==============将文件信息入库============
-        MediaFiles mediaFiles = currentProxy.addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucketVideoFiles, objectName);
+        MediaFiles mediaFiles = currentProxy.addMediaFilesToDb(lecturerId, fileMd5, uploadFileParamsDto, bucketVideoFiles, objectName);
         if (mediaFiles == null) {
             throw new BusinessException("文件入库失败");
         }

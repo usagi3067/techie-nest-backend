@@ -5,13 +5,13 @@
 <mapper namespace="com.dango.auth.ucenter.mapper.RoleMapper">
 
     <resultMap id="BaseResultMap" type="com.dango.auth.ucenter.model.entity.Role">
-            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
             <result property="roleCode" column="role_code" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="status" column="status" jdbcType="CHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

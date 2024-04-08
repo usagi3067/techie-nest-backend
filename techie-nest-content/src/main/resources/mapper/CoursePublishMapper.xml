@@ -6,43 +6,46 @@
 
     <resultMap id="BaseResultMap" type="com.dango.content.model.entity.CoursePublish">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="companyId" column="company_id" jdbcType="BIGINT"/>
-            <result property="companyName" column="company_name" jdbcType="VARCHAR"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="users" column="users" jdbcType="VARCHAR"/>
             <result property="tags" column="tags" jdbcType="VARCHAR"/>
-            <result property="username" column="username" jdbcType="VARCHAR"/>
-            <result property="mt" column="mt" jdbcType="VARCHAR"/>
-            <result property="mtName" column="mt_name" jdbcType="VARCHAR"/>
-            <result property="st" column="st" jdbcType="VARCHAR"/>
-            <result property="stName" column="st_name" jdbcType="VARCHAR"/>
-            <result property="grade" column="grade" jdbcType="VARCHAR"/>
-            <result property="teachMode" column="teach_mode" jdbcType="VARCHAR"/>
+            <result property="lecturerId" column="lecturer_id" jdbcType="BIGINT"/>
+            <result property="lecturerName" column="lecturer_name" jdbcType="VARCHAR"/>
+            <result property="mainCategory" column="main_category" jdbcType="VARCHAR"/>
+            <result property="mainCategoryName" column="main_category_name" jdbcType="VARCHAR"/>
+            <result property="subCategory" column="sub_category" jdbcType="VARCHAR"/>
+            <result property="subCategoryName" column="sub_category_name" jdbcType="VARCHAR"/>
             <result property="pic" column="pic" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="preKnowledge" column="pre_knowledge" jdbcType="VARCHAR"/>
             <result property="market" column="market" jdbcType="VARCHAR"/>
             <result property="teachPlan" column="teach_plan" jdbcType="VARCHAR"/>
-            <result property="teachers" column="teachers" jdbcType="VARCHAR"/>
-            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-            <result property="onlineDate" column="online_date" jdbcType="TIMESTAMP"/>
+            <result property="lecturerInfo" column="lecturer_info" jdbcType="VARCHAR"/>
+            <result property="publishDate" column="publish_date" jdbcType="TIMESTAMP"/>
             <result property="offlineDate" column="offline_date" jdbcType="TIMESTAMP"/>
             <result property="status" column="status" jdbcType="VARCHAR"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>
-            <result property="charge" column="charge" jdbcType="VARCHAR"/>
-            <result property="price" column="price" jdbcType="FLOAT"/>
-            <result property="originalPrice" column="original_price" jdbcType="FLOAT"/>
+            <result property="isFree" column="is_free" jdbcType="TINYINT"/>
+            <result property="price" column="price" jdbcType="DOUBLE"/>
+            <result property="originalPrice" column="original_price" jdbcType="DOUBLE"/>
             <result property="validDays" column="valid_days" jdbcType="INTEGER"/>
+            <result property="countBuy" column="count_buy" jdbcType="INTEGER"/>
+            <result property="countStudy" column="count_study" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,company_id,company_name,
-        name,users,tags,
-        username,mt,mt_name,
-        st,st_name,grade,
-        teach_mode,pic,description,
-        market,teach_plan,teachers,
-        create_date,online_date,offline_date,
-        status,remark,charge,
-        price,original_price,valid_days
+        id,name,tags,
+        lecturer_id,lecturer_name,main_category,
+        main_category_name,sub_category,sub_category_name,
+        pic,description,pre_knowledge,
+        market,teach_plan,lecturer_info,publish_date,
+        offline_date,status,remark,
+        is_free,price,original_price,
+        valid_days,count_buy,count_study
     </sql>
+
+    <update id="incrementCountStudy">
+        UPDATE course_publish
+        SET count_study = count_study + 1
+        WHERE id = #{countId}
+    </update>
 </mapper>

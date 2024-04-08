@@ -70,3 +70,12 @@ GET {{content_host}}/api/content/course-category/allSt/1-1
 
 ### 查询课程计划树形列表
 GET {{content_host}}/api/content/teach-plan/133/tree-nodes
+
+### 更新选课人数
+POST {{content_host}}/api/content/course/count/4
+
+### 茬新榜单数据
+GET {{content_host}}/api/content/course/index
+
+### 更新讲师余额
+POST {{content_host}}/api/content/lecturer/7013175842254848/10.3

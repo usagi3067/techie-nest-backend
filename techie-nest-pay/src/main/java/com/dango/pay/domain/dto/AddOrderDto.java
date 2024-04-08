@@ -26,6 +26,12 @@ public class AddOrderDto  {
      * 订单名称
      */
     private String orderName;
+
+    /**
+     * 订单关联的课程id
+     */
+    private Long orderCourseId;
+
     /**
      * 订单描述
      */

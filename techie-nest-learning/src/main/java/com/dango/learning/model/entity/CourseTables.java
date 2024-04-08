@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 
@@ -32,7 +31,7 @@ public class CourseTables implements Serializable {
      * 用户id
      */
     @TableField(value = "user_id")
-    private String userId;
+    private Long userId;
 
     /**
      * 课程id
@@ -41,10 +40,10 @@ public class CourseTables implements Serializable {
     private Long courseId;
 
     /**
-     * 机构id
+     * 讲师id
      */
-    @TableField(value = "company_id")
-    private Long companyId;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
 
     /**
      * 课程名称
@@ -53,22 +52,16 @@ public class CourseTables implements Serializable {
     private String courseName;
 
     /**
-     * 课程类型
+     * 是否免费(1: 免费, 0: 收费)
      */
-    @TableField(value = "course_type")
-    private String courseType;
+    @TableField(value = "is_free")
+    private Integer isFree;
 
     /**
      * 课程图片
      */
     @TableField(value = "pic")
     private String pic;
-
-    /**
-     * 添加时间
-     */
-    @TableField(value = "create_date")
-    private LocalDateTime createDate;
 
     /**
      * 开始服务时间
@@ -81,12 +74,6 @@ public class CourseTables implements Serializable {
      */
     @TableField(value = "valid_time_end")
     private LocalDateTime validTimeEnd;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_date")
-    private LocalDateTime updateDate;
 
     /**
      * 备注

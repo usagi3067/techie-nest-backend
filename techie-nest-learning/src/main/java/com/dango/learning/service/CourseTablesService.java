@@ -19,7 +19,7 @@ public interface CourseTablesService extends IService<CourseTables> {
      * @param courseId
      * @return
      */
-    ChooseCourseDto addChooseCourse(String userId, Long courseId);
+    ChooseCourseDto addChooseCourse(Long userId, Long courseId);
 
     /**
      * @description 判断学习资格
@@ -29,7 +29,7 @@ public interface CourseTablesService extends IService<CourseTables> {
      * @author Mr.M
      * @date 2022/10/3 7:37
      */
-    public CourseTablesDto getLearningStatus(String userId, Long courseId);
+    public CourseTablesDto getLearningStatus(Long userId, Long courseId);
 
     boolean saveChooseCourseSuccess(String chooseCourseId);
 

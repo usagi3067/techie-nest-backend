@@ -1,11 +1,10 @@
 package com.dango.learning.feignclient;
 
-import com.dango.learning.model.dto.CoursePublish;
+import com.dango.learning.model.dto.CoursePublishDto;
+import com.dango.learning.model.dto.LecturerBalanceDto;
 import com.dango.model.BaseResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Mr.M
@@ -18,6 +17,14 @@ public interface ContentServiceClient {
 
     @ResponseBody
     @GetMapping("/api/content/r/coursepublish/{courseId}")
-    public BaseResponse<CoursePublish> getCoursepublish(@PathVariable("courseId") Long courseId);
+    public BaseResponse<CoursePublishDto> getCoursepublish(@PathVariable("courseId") Long courseId);
 
+    @ResponseBody
+    @PostMapping("/api/content/course/count/{courseId}")
+    BaseResponse<Boolean> updateCourseStudyCount(@PathVariable("courseId") Long courseId);
+
+
+    @ResponseBody
+    @PostMapping("/api/content/lecturer")
+    void updateBalance(@RequestBody LecturerBalanceDto lecturerBalanceDto);
 }

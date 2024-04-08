@@ -19,7 +19,7 @@ public class Role implements Serializable {
      * 
      */
     @TableId(value = "id")
-    private String id;
+    private Long id;
 
     /**
      * 
@@ -55,7 +55,7 @@ public class Role implements Serializable {
      * 
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

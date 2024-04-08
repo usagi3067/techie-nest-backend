@@ -50,4 +50,5 @@ public interface CourseBaseService extends IService<CourseBase> {
 
     Boolean deleteCourse(Long lecturerId, Long courseId);
 
+    PageResult<CourseBase> queryCoursePageList(PageParams pageParam, QueryCoursePageDto dto);
 }

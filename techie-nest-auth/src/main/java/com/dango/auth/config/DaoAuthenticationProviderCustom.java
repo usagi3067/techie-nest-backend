@@ -22,9 +22,10 @@ public class DaoAuthenticationProviderCustom extends DaoAuthenticationProvider {
         super.setUserDetailsService(userDetailsService);
     }
 
+    // 里面啥也不写就不会校验密码了
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-
+// 屏蔽密码对比，因为不是所有的认证方式都需要校验密码
     }
 }
 

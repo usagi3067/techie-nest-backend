@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "password": "1234",
   "confirmpwd": "1234",
-  "username": "i1"
+  "username": "qq"
 }
 
 ### 学生授权
@@ -14,7 +14,11 @@ POST {{auth_host}}/oauth/token?client_id=WebApp&client_secret=WebApp&grant_type=
 
 ### 讲师授权
 POST {{auth_host}}/oauth/token?client_id=WebApp&client_secret=WebApp&grant_type=password&username=
-    {"username": "i1", "authType":"password","password": 1234}&scope=all
+    {"username": "l1", "authType":"password","password": 1234}&scope=all
+
+### 管理员授权
+POST {{auth_host}}/oauth/token?client_id=WebApp&client_secret=WebApp&grant_type=password&username=
+    {"username": "a1", "authType":"password","password": 1234}&scope=all
 
 ### 校验
-POST {{auth_host}}/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidGVjaGllLW5lc3QiXSwidXNlcl9uYW1lIjoie1wiY3JlYXRlVGltZVwiOlwiMjAyNC0wNC0wNFQwMDowMDo1Ni42MzBcIixcImlkXCI6XCJkMzgwZWU3OTY0MGE0YzM5XCIsXCJzdGF0dXNcIjpcIjFcIixcInVUeXBlXCI6MixcInVwZGF0ZVRpbWVcIjpcIjIwMjQtMDQtMDNUMTY6MDA6NTYuNjcyXCIsXCJ1c2VybmFtZVwiOlwiaTFcIn0iLCJzY29wZSI6WyJhbGwiXSwiZXhwIjoxNzEyMTY3MzAxLCJhdXRob3JpdGllcyI6WyJST0xFX0lOU1RSVUNUT1IiXSwianRpIjoic0ctamY3c0VPN0ktSFNabl9pcGtOeUN5Z0s4IiwiY2xpZW50X2lkIjoiV2ViQXBwIn0.fwg1ZtxG6MO5uDvDBflzEGt38nh9VyWNoz276Gnx0Tk
+POST {{auth_host}}/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidGVjaGllLW5lc3QiXSwidXNlcl9uYW1lIjoie1wiY3JlYXRlVGltZVwiOlwiMjAyNC0wNC0wNFQxMTo0NDoyNi4wOTNcIixcImlkXCI6NzAxMzE4MDQ4MTI2MTU2OCxcInN0YXR1c1wiOjEsXCJ1VHlwZVwiOjMsXCJ1cGRhdGVUaW1lXCI6XCIyMDI0LTA0LTA0VDAzOjQ0OjI2LjIyN1wiLFwidXNlcm5hbWVcIjpcImExXCJ9Iiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTcxMjIwOTQ3MCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9BRE1JTiJdLCJqdGkiOiItbkVEUENGUUhWekktMXlLSk9ob2dEQVlQV28iLCJjbGllbnRfaWQiOiJXZWJBcHAifQ.FuHDIGQTNkXO4yntuflzvW1hVhSRDjwPIcaeEPitpqU

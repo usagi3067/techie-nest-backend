@@ -6,19 +6,16 @@
 
     <resultMap id="BaseResultMap" type="com.dango.media.model.entity.MediaFiles">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="companyId" column="company_id" jdbcType="BIGINT"/>
-            <result property="companyName" column="company_name" jdbcType="VARCHAR"/>
+            <result property="lecturerId" column="lecturer_id" jdbcType="BIGINT"/>
+            <result property="lecturerName" column="lecturer_name" jdbcType="VARCHAR"/>
             <result property="filename" column="filename" jdbcType="VARCHAR"/>
             <result property="fileType" column="file_type" jdbcType="VARCHAR"/>
-            <result property="tags" column="tags" jdbcType="VARCHAR"/>
             <result property="bucket" column="bucket" jdbcType="VARCHAR"/>
             <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
             <result property="fileId" column="file_id" jdbcType="VARCHAR"/>
             <result property="url" column="url" jdbcType="VARCHAR"/>
-            <result property="username" column="username" jdbcType="VARCHAR"/>
-            <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-            <result property="changeDate" column="change_date" jdbcType="TIMESTAMP"/>
-            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="dateCreated" column="date_created" jdbcType="TIMESTAMP"/>
+            <result property="dateUpdated" column="date_updated" jdbcType="TIMESTAMP"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>
             <result property="auditStatus" column="audit_status" jdbcType="VARCHAR"/>
             <result property="auditMind" column="audit_mind" jdbcType="VARCHAR"/>
@@ -26,11 +23,10 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,company_id,company_name,
-        filename,file_type,tags,
-        bucket,file_path,file_id,
-        url,username,create_date,
-        change_date,status,remark,
+        id,lecturer_id,lecturer_name,
+        filename,file_type,bucket,
+        file_path,file_id,url,
+        date_created,date_updated,remark,
         audit_status,audit_mind,file_size
     </sql>
 </mapper>

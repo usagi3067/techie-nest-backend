@@ -1,12 +1,12 @@
 package com.dango.media.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 媒资信息
@@ -22,16 +22,16 @@ public class MediaFiles implements Serializable {
     private String id;
 
     /**
-     * 机构ID
+     * 讲师ID
      */
-    @TableField(value = "company_id")
-    private Long companyId;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
 
     /**
-     * 机构名称
+     * 讲师名称
      */
-    @TableField(value = "company_name")
-    private String companyName;
+    @TableField(value = "lecturer_name")
+    private String lecturerName;
 
     /**
      * 文件名称
@@ -40,16 +40,10 @@ public class MediaFiles implements Serializable {
     private String filename;
 
     /**
-     * 文件类型（图片、文档，视频）
+     * 文件类型（图片、文档，视频）300001:图片 300002: 视频 30003:其他
      */
     @TableField(value = "file_type")
     private String fileType;
-
-    /**
-     * 标签
-     */
-    @TableField(value = "tags")
-    private String tags;
 
     /**
      * 存储目录
@@ -76,28 +70,16 @@ public class MediaFiles implements Serializable {
     private String url;
 
     /**
-     * 上传人
+     * 创建时间
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "date_created")
+    private LocalDateTime dateCreated;
 
     /**
-     * 上传时间
+     * 更新时间
      */
-    @TableField(value = "create_date")
-    private LocalDateTime createDate;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "change_date")
-    private LocalDateTime changeDate;
-
-    /**
-     * 状态,1:正常，0:不展示
-     */
-    @TableField(value = "status")
-    private String status;
+    @TableField(value = "date_updated")
+    private LocalDateTime dateUpdated;
 
     /**
      * 备注

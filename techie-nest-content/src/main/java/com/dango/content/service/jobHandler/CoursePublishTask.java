@@ -8,6 +8,7 @@ import com.dango.exception.BusinessException;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MessageProcessAbstract;
 import com.dango.messagesdk.service.MqMessageService;
+import com.dango.model.BaseResponse;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
@@ -54,41 +55,11 @@ public class CoursePublishTask extends MessageProcessAbstract {
         //获取消息相关的业务信息
         String businessKey1 = mqMessage.getBusinessKey1();
         long courseId = Integer.parseInt(businessKey1);
-        //课程静态化
-        generateCourseHtml(mqMessage,courseId);
         //课程索引
         saveCourseIndex(mqMessage,courseId);
         //课程缓存
         saveCourseCache(mqMessage,courseId);
         return true;
-    }
-
-    //生成课程静态化页面并上传至文件系统
-    public void generateCourseHtml(MqMessage mqMessage,long courseId){
-
-        log.debug("开始进行课程静态化,课程id:{}",courseId);
-        //消息id
-        Long id = mqMessage.getId();
-        //消息处理的service
-        MqMessageService mqMessageService = this.getMqMessageService();
-        //消息幂等性处理
-        int stageOne = mqMessageService.getStageOne(id);
-        if(stageOne == 1){
-            log.debug("课程静态化已处理直接返回，课程id:{}",courseId);
-            return ;
-        }
-
-        //生成静态化页面
-        File file = coursePublishService.generateCourseHtml(courseId);
-        //上传静态化页面
-        if(file!=null){
-            coursePublishService.uploadCourseHtml(courseId,file);
-        }
-        //保存第一阶段状态
-        mqMessageService.completedStageOne(id);
-
-
-
     }
 
     //将课程信息缓存至redis
@@ -105,11 +76,11 @@ public class CoursePublishTask extends MessageProcessAbstract {
         //任务id
         Long taskId = mqMessage.getId();
         MqMessageService mqMessageService = this.getMqMessageService();
-        //取出第二个阶段状态
-        int stageTwo = mqMessageService.getStageTwo(taskId);
+        //取出第一个阶段状态
+        int stageOne = mqMessageService.getStageOne(taskId);
 
         //任务幂等性处理
-        if(stageTwo>0){
+        if(stageOne>0){
             log.debug("课程索引信息已写入，无需执行...");
             return;
         }
@@ -120,13 +91,13 @@ public class CoursePublishTask extends MessageProcessAbstract {
         CourseIndex courseIndex = new CourseIndex();
         BeanUtils.copyProperties(coursePublish,courseIndex);
         //远程调用
-        Boolean add = searchServiceClient.add(courseIndex);
-        if(!add){
+        BaseResponse<Boolean> add = searchServiceClient.add(courseIndex);
+        if(!add.getData()){
             throw new BusinessException("远程调用搜索服务添加课程索引失败");
         }
 
         //完成本阶段的任务
-        mqMessageService.completedStageTwo(taskId);
+        mqMessageService.completedStageOne(taskId);
 
     }
 

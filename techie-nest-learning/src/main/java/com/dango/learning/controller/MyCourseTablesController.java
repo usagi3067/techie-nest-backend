@@ -44,7 +44,7 @@ public class MyCourseTablesController {
         if (user == null) {
             throw new BusinessException("请登录后继续选课");
         }
-        String userId = user.getId();
+        Long userId = user.getId();
         ChooseCourseDto chooseCourseDto = courseTablesService.addChooseCourse(userId, courseId);
         return ResultUtils.success(chooseCourseDto);
 
@@ -58,7 +58,7 @@ public class MyCourseTablesController {
         if (user == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        String userId = user.getId();
+        Long userId = user.getId();
         CourseTablesDto learningStatus = courseTablesService.getLearningStatus(userId, courseId);
         return ResultUtils.success(learningStatus);
     }
@@ -71,7 +71,7 @@ public class MyCourseTablesController {
         if (user == null) {
             throw new BusinessException("请登录后继续选课");
         }
-        String userId = user.getId();
+        Long userId = user.getId();
 //设置当前的登录用户
         params.setUserId(userId);
 

@@ -20,28 +20,28 @@ public interface MediaFilesService extends IService<MediaFiles> {
     /**
      * 上传文件
      *
-     * @param companyId           机构id
+     * @param lecturerId           讲师id
      * @param uploadFileParamsDto 文件信息
      * @param localFilePath       文件本地路径
      * @param ObjectName          对象名
      * @return UploadFileResultDto
      */
-    UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String ObjectName);
+    UploadFileResultDto uploadFile(Long lecturerId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String ObjectName);
 
     /**
      * 查询媒资文件列表
      *
-     * @param companyId
+     * @param lecturerId
      * @param pageParams
      * @param queryMediaParamsDto
      * @return
      */
-    PageResult<MediaFiles> queryMediaFiles(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto);
+    PageResult<MediaFiles> queryMediaFiles(Long lecturerId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto);
 
     /**
      * 添加媒资文件到数据库
      *
-     * @param companyId           机构 id
+     * @param lecturerId           讲师 id
      * @param fileMd5             文件 md5值
      * @param uploadFileParamsDto 文件信息
      * @param bucket              存储桶
@@ -49,7 +49,7 @@ public interface MediaFilesService extends IService<MediaFiles> {
      * @return
      */
     @Transactional
-    MediaFiles addMediaFilesToDb(Long companyId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName);
+    MediaFiles addMediaFilesToDb(Long lecturerId, String fileMd5, UploadFileParamsDto uploadFileParamsDto, String bucket, String objectName);
 
 
     boolean addMediaFilesToMinIO(String localFilePath, String mimeType, String bucket, String objectName);
@@ -79,7 +79,7 @@ public interface MediaFilesService extends IService<MediaFiles> {
     Boolean uploadChunk(String fileMd5, int chunk, String localChunkFilePath);
 
 
-    Boolean mergechunks(long companyId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto);
+    Boolean mergechunks(long lecturerId, String fileMd5, int chunkTotal, UploadFileParamsDto uploadFileParamsDto);
 
     /**
      * 从minio下载文件

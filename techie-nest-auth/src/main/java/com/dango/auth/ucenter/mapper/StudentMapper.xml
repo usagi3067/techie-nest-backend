@@ -6,11 +6,10 @@
 
     <resultMap id="BaseResultMap" type="com.dango.auth.ucenter.model.entity.Student">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
             <result property="hobby" column="hobby" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,hobby
+        id,hobby
     </sql>
 </mapper>

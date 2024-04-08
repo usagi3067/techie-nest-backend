@@ -8,7 +8,7 @@ import com.dango.learning.feignclient.ContentServiceClient;
 import com.dango.learning.mapper.ChooseCourseMapper;
 import com.dango.learning.mapper.CourseTablesMapper;
 import com.dango.learning.model.dto.ChooseCourseDto;
-import com.dango.learning.model.dto.CoursePublish;
+import com.dango.learning.model.dto.CoursePublishDto;
 import com.dango.learning.model.dto.CourseTablesDto;
 import com.dango.learning.model.dto.MyCourseTableParams;
 import com.dango.learning.model.entity.ChooseCourse;
@@ -16,6 +16,7 @@ import com.dango.learning.model.entity.CourseTables;
 import com.dango.learning.service.CourseTablesService;
 import com.dango.model.BaseResponse;
 import com.dango.model.PageResult;
+import com.dango.model.state.ChooseCourseStatus;
 import com.dango.model.state.CourseFeeStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +38,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
     ChooseCourseMapper chooseCourseMapper;
 
     @Autowired
-    CourseTablesMapper CourseTablesMapper;
+    CourseTablesMapper courseTablesMapper;
 
     @Autowired
     ContentServiceClient contentServiceClient;
@@ -50,24 +51,24 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
 
 
     @Override
-    public ChooseCourseDto addChooseCourse(String userId, Long courseId) {
+    public ChooseCourseDto addChooseCourse(Long userId, Long courseId) {
         //查询课程信息
-        BaseResponse<CoursePublish> coursePublishBaseResponse = contentServiceClient.getCoursepublish(courseId);
+        BaseResponse<CoursePublishDto> coursePublishBaseResponse = contentServiceClient.getCoursepublish(courseId);
         if (coursePublishBaseResponse.getCode() != 0)
             throw new BusinessException("没有相关课程发布记录");
-        CoursePublish coursePublish = coursePublishBaseResponse.getData();
+        CoursePublishDto coursePublishDto = coursePublishBaseResponse.getData();
         //课程收费标准
-        String charge = coursePublish.getCharge();
+        Integer isFree = coursePublishDto.getIsFree();
         //选课记录
         ChooseCourse chooseCourse = null;
-        if (CourseFeeStatus.FREE.getCode().equals(charge)) {//课程免费
+        if (CourseFeeStatus.FREE.getCode().equals(isFree)) {//课程免费
             //添加免费课程
-            chooseCourse = addFreeCoruse(userId, coursePublish);
+            chooseCourse = addFreeCoruse(userId, coursePublishDto);
             //添加到我的课程表
-            CourseTables courseTables = addCourseTables(chooseCourse);
+            addCourseTables(chooseCourse);
         } else {
             //添加收费课程
-            chooseCourse = addChargeCourse(userId, coursePublish);
+            chooseCourse = addChargeCourse(userId, coursePublishDto);
         }
         //获取学习资格
         ChooseCourseDto chooseCourseDto = new ChooseCourseDto();
@@ -82,13 +83,13 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
     }
 
     @Override
-    public CourseTablesDto getLearningStatus(String userId, Long courseId) {
+    public CourseTablesDto getLearningStatus(Long userId, Long courseId) {
         //查询我的课程表
         CourseTables CourseTables = getCourseTables(userId, courseId);
         if (CourseTables == null) {
             CourseTablesDto CourseTablesDto = new CourseTablesDto();
             //没有选课或选课后没有支付
-            CourseTablesDto.setLearnStatus("702002");
+            CourseTablesDto.setLearnStatus(ChooseCourseStatus.NEED_PAY.getCode());
             return CourseTablesDto;
         }
         CourseTablesDto CourseTablesDto = new CourseTablesDto();
@@ -97,24 +98,24 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         boolean isExpires = CourseTables.getValidTimeEnd().isBefore(LocalDateTime.now());
         if (!isExpires) {
             //正常学习
-            CourseTablesDto.setLearnStatus("702001");
+            CourseTablesDto.setLearnStatus(ChooseCourseStatus.SUCCESS.getCode());
             return CourseTablesDto;
 
         } else {
             //已过期
-            CourseTablesDto.setLearnStatus("702003");
+            CourseTablesDto.setLearnStatus(ChooseCourseStatus.OUTDATED.getCode());
             return CourseTablesDto;
         }
 
 
     }
 
-    private ChooseCourse addChargeCourse(String userId, CoursePublish coursepublish) {
+    private ChooseCourse addChargeCourse(Long userId, CoursePublishDto coursepublish) {
 
         //如果存在待支付交易记录直接返回
         LambdaQueryWrapper<ChooseCourse> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getOrderType, "700002")//收费订单
-                .eq(ChooseCourse::getStatus, "701002");//待支付
+        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getIsFree, CourseFeeStatus.PAID.getCode())//收费订单
+                .eq(ChooseCourse::getStatus, ChooseCourseStatus.NEED_PAY.getCode());//待支付
         List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && ChooseCourses.size() > 0) {
             return ChooseCourses.get(0);
@@ -125,10 +126,9 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         chooseCourse.setCourseName(coursepublish.getName());
         chooseCourse.setCoursePrice(coursepublish.getPrice());
         chooseCourse.setUserId(userId);
-        chooseCourse.setCompanyId(coursepublish.getCompanyId());
-        chooseCourse.setOrderType("700002");//收费课程
-        chooseCourse.setCreateDate(LocalDateTime.now());
-        chooseCourse.setStatus("701002");//待支付
+        chooseCourse.setLecturerId(coursepublish.getLecturerId());
+        chooseCourse.setIsFree(0);//收费课程
+        chooseCourse.setStatus(ChooseCourseStatus.NEED_PAY.getCode());//待支付
 
         chooseCourse.setValidDays(coursepublish.getValidDays());
         chooseCourse.setValidTimeStart(LocalDateTime.now());
@@ -142,18 +142,18 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
 
     }
 
-    public CourseTables getCourseTables(String userId, Long courseId) {
+    public CourseTables getCourseTables(Long userId, Long courseId) {
         LambdaQueryWrapper<CourseTables> queryWrapper = new LambdaQueryWrapper<CourseTables>().eq(CourseTables::getUserId, userId).eq(CourseTables::getCourseId, courseId);
-        CourseTables CourseTables = CourseTablesMapper.selectOne(queryWrapper);
-        return CourseTables;
+        return courseTablesMapper.selectOne(queryWrapper);
 
     }
+
 
 
     private CourseTables addCourseTables(ChooseCourse chooseCourse) {
         //选课记录完成且未过期可以添加课程到课程表
         String status = chooseCourse.getStatus();
-        if (!"701001".equals(status)) {
+        if (!ChooseCourseStatus.SUCCESS.getCode().equals(status)) {
             throw new BusinessException("选课未成功，无法添加到课程表");
         }
         //查询我的课程表
@@ -161,49 +161,50 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         if (CourseTables != null) {
             return CourseTables;
         }
-        CourseTables CourseTablesNew = new CourseTables();
-        CourseTablesNew.setChooseCourseId(chooseCourse.getId());
-        CourseTablesNew.setUserId(chooseCourse.getUserId());
-        CourseTablesNew.setCourseId(chooseCourse.getCourseId());
-        CourseTablesNew.setCompanyId(chooseCourse.getCompanyId());
-        CourseTablesNew.setCourseName(chooseCourse.getCourseName());
-        CourseTablesNew.setCreateDate(LocalDateTime.now());
-        CourseTablesNew.setPic(chooseCourse.getPic());
-        CourseTablesNew.setValidTimeStart(chooseCourse.getValidTimeStart());
-        CourseTablesNew.setValidTimeEnd(chooseCourse.getValidTimeEnd());
-        CourseTablesNew.setCourseType(chooseCourse.getOrderType());
-        CourseTablesMapper.insert(CourseTablesNew);
+        CourseTables courseTablesNew = new CourseTables();
+        courseTablesNew.setChooseCourseId(chooseCourse.getId());
+        courseTablesNew.setUserId(chooseCourse.getUserId());
+        courseTablesNew.setCourseId(chooseCourse.getCourseId());
+        courseTablesNew.setLecturerId(chooseCourse.getLecturerId());
+        courseTablesNew.setCourseName(chooseCourse.getCourseName());
+        courseTablesNew.setPic(chooseCourse.getPic());
+        courseTablesNew.setValidTimeStart(chooseCourse.getValidTimeStart());
+        courseTablesNew.setValidTimeEnd(chooseCourse.getValidTimeEnd());
+        courseTablesNew.setIsFree(chooseCourse.getIsFree());
+        courseTablesNew.setPic(chooseCourse.getPic());
+        courseTablesMapper.insert(courseTablesNew);
 
-        return CourseTablesNew;
+        contentServiceClient.updateCourseStudyCount(chooseCourse.getCourseId());
+
+        return courseTablesNew;
 
     }
 
-    private ChooseCourse addFreeCoruse(String userId, CoursePublish coursepublish) {
+    private ChooseCourse addFreeCoruse(Long userId, CoursePublishDto coursepublish) {
         //查询选课记录表是否存在免费的且选课成功的订单
         LambdaQueryWrapper<ChooseCourse> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getOrderType, "700001")//免费课程
-                .eq(ChooseCourse::getStatus, "701001");//选课成功
+        queryWrapper = queryWrapper.eq(ChooseCourse::getUserId, userId).eq(ChooseCourse::getCourseId, coursepublish.getId()).eq(ChooseCourse::getIsFree, CourseFeeStatus.FREE.getCode())//免费课程
+                .eq(ChooseCourse::getStatus, ChooseCourseStatus.SUCCESS.getCode());//选课成功
         List<ChooseCourse> ChooseCourses = chooseCourseMapper.selectList(queryWrapper);
         if (ChooseCourses != null && !ChooseCourses.isEmpty()) {
             return ChooseCourses.get(0);
         }
         //添加选课记录信息
-        ChooseCourse ChooseCourse = new ChooseCourse();
-        ChooseCourse.setCourseId(coursepublish.getId());
-        ChooseCourse.setCourseName(coursepublish.getName());
-        ChooseCourse.setCoursePrice(0.00);//免费课程价格为0
-        ChooseCourse.setUserId(userId);
-        ChooseCourse.setCompanyId(coursepublish.getCompanyId());
-        ChooseCourse.setOrderType("700001");//免费课程
-        ChooseCourse.setCreateDate(LocalDateTime.now());
-        ChooseCourse.setStatus("701001");//选课成功
+        ChooseCourse chooseCourse = new ChooseCourse();
+        chooseCourse.setCourseId(coursepublish.getId());
+        chooseCourse.setCourseName(coursepublish.getName());
+        chooseCourse.setCoursePrice(0.00);//免费课程价格为0
+        chooseCourse.setUserId(userId);
+        chooseCourse.setLecturerId(coursepublish.getLecturerId());
+        chooseCourse.setIsFree(CourseFeeStatus.FREE.getCode());//免费课程
+        chooseCourse.setStatus(ChooseCourseStatus.SUCCESS.getCode());//选课成功
+        chooseCourse.setPic(coursepublish.getPic());
+        chooseCourse.setValidDays(365);//免费课程默认365
+        chooseCourse.setValidTimeStart(LocalDateTime.now());
+        chooseCourse.setValidTimeEnd(LocalDateTime.now().plusDays(365));
+        chooseCourseMapper.insert(chooseCourse);
 
-        ChooseCourse.setValidDays(365);//免费课程默认365
-        ChooseCourse.setValidTimeStart(LocalDateTime.now());
-        ChooseCourse.setValidTimeEnd(LocalDateTime.now().plusDays(365));
-        chooseCourseMapper.insert(ChooseCourse);
-
-        return ChooseCourse;
+        return chooseCourse;
 
     }
 
@@ -219,9 +220,9 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         //选课状态
         String status = chooseCourse.getStatus();
         //只有当未支付时才更新为已支付
-        if ("701002".equals(status)) {
+        if (ChooseCourseStatus.NEED_PAY.getCode().equals(status)) {
             //更新选课记录的状态为支付成功
-            chooseCourse.setStatus("701001");
+            chooseCourse.setStatus(ChooseCourseStatus.SUCCESS.getCode());
             int i = chooseCourseMapper.updateById(chooseCourse);
             if (i <= 0) {
                 log.debug("添加选课记录失败:{}", chooseCourse);
@@ -229,7 +230,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
             }
 
             //向我的课程表插入记录
-            CourseTables xcCourseTables = addCourseTables(chooseCourse);
+            addCourseTables(chooseCourse);
             return true;
         }
         return false;
@@ -245,7 +246,7 @@ public class CourseTablesServiceImpl extends ServiceImpl<CourseTablesMapper, Cou
         //分页条件
         Page<CourseTables> page = new Page<>(pageNo, pageSize);
         //根据用户id查询
-        String userId = params.getUserId();
+        Long userId = params.getUserId();
         LambdaQueryWrapper<CourseTables> lambdaQueryWrapper = new LambdaQueryWrapper<CourseTables>().eq(CourseTables::getUserId, userId);
 
         //分页查询

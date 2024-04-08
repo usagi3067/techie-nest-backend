@@ -25,24 +25,20 @@ public class CourseIndex implements Serializable {
     private Long id;
 
     /**
-     * 机构ID
+     * 讲师ID
      */
-    private Long companyId;
+    private Long lecturerId;
 
     /**
-     * 公司名称
+     * 讲师名称
      */
-    private String companyName;
+    private String lecturerName;
 
     /**
      * 课程名称
      */
     private String name;
 
-    /**
-     * 适用人群
-     */
-    private String users;
 
     /**
      * 标签
@@ -53,34 +49,27 @@ public class CourseIndex implements Serializable {
     /**
      * 大分类
      */
-    private String mt;
+    private String mainCategory;
 
     /**
      * 大分类名称
      */
-    private String mtName;
+    private String mainCategoryName;
 
     /**
      * 小分类
      */
-    private String st;
+    private String subCategory;
 
     /**
      * 小分类名称
      */
-    private String stName;
-
-
+    private String subCategoryName;
 
     /**
-     * 课程等级
+     * 是否免费
      */
-    private String grade;
-
-    /**
-     * 教育模式
-     */
-    private String teachMode;
+    private Integer IsFree;
     /**
      * 课程图片
      */
@@ -108,11 +97,6 @@ public class CourseIndex implements Serializable {
      * 备注
      */
     private String remark;
-
-    /**
-     * 收费规则，对应数据字典--203
-     */
-    private String charge;
 
     /**
      * 现价

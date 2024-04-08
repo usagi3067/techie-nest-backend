@@ -7,12 +7,13 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.dango.exception.BusinessException;
 import com.dango.model.BaseResponse;
+import com.dango.model.state.PayStatus;
 import com.dango.pay.config.AlipayConfig;
 import com.dango.pay.domain.dto.AddOrderDto;
 import com.dango.pay.domain.dto.PayRecordDto;
 import com.dango.pay.domain.dto.PayStatusDto;
-import com.dango.pay.domain.entity.XcPayRecord;
-import com.dango.pay.service.XcOrdersService;
+import com.dango.pay.domain.entity.PayRecord;
+import com.dango.pay.service.OrdersService;
 import com.dango.pay.util.SecurityUtil;
 import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
@@ -45,7 +46,7 @@ import java.util.Map;
 public class OrderController {
 
     @Autowired
-    private XcOrdersService orderService;
+    private OrdersService orderService;
 
     @Value("${pay.alipay.APP_ID}")
     String APP_ID;
@@ -73,13 +74,13 @@ public class OrderController {
     @GetMapping("/requestpay")
     public BaseResponse<Boolean> requestpay(String payNo, HttpServletResponse httpResponse) throws IOException {
         //如果payNo不存在则提示重新发起支付
-        XcPayRecord payRecord = orderService.getPayRecordByPayno(payNo);
+        PayRecord payRecord = orderService.getPayRecordByPayno(payNo);
         if (payRecord == null) {
             throw new BusinessException("请重新点击支付获取二维码");
         }
         //支付状态
         String status = payRecord.getStatus();
-        if ("601002".equals(status)) {
+        if (PayStatus.PAID.getCode().equals(status)) {
             throw new BusinessException("订单已支付，请勿重复支付。");
         }
         //构造sdk的客户端对象

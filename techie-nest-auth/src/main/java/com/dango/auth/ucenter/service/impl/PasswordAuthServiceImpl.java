@@ -1,13 +1,12 @@
 package com.dango.auth.ucenter.service.impl;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.dango.auth.ucenter.feignclient.CheckCodeClient;
 import com.dango.auth.ucenter.mapper.UserMapper;
 import com.dango.auth.ucenter.model.dto.AuthParamsDto;
-import com.dango.auth.ucenter.model.dto.UserExt;
 import com.dango.auth.ucenter.model.entity.User;
 import com.dango.auth.ucenter.service.AuthService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

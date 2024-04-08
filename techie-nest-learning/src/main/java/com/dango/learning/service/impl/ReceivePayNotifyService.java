@@ -3,6 +3,10 @@ package com.dango.learning.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.dango.exception.BusinessException;
 import com.dango.learning.config.PayNotifyConfig;
+import com.dango.learning.feignclient.ContentServiceClient;
+import com.dango.learning.mapper.ChooseCourseMapper;
+import com.dango.learning.model.dto.LecturerBalanceDto;
+import com.dango.learning.model.entity.ChooseCourse;
 import com.dango.learning.service.CourseTablesService;
 import com.dango.messagesdk.domain.entity.MqMessage;
 import com.dango.messagesdk.service.MqMessageService;
@@ -27,6 +31,14 @@ public class ReceivePayNotifyService {
     @Autowired
     CourseTablesService courseTablesService;
 
+    @Autowired
+    ContentServiceClient contentServiceClient;
+
+    @Autowired
+    ChooseCourseMapper chooseCourseMapper;
+
+
+
 
     //监听消息队列接收支付结果通知
     @RabbitListener(queues = PayNotifyConfig.PAYNOTIFY_QUEUE)
@@ -50,13 +62,20 @@ public class ReceivePayNotifyService {
             String choosecourseId = mqMessage.getBusinessKey1();
             //添加选课
             boolean b = courseTablesService.saveChooseCourseSuccess(choosecourseId);
-            if(!b){
+            if (!b) {
                 //添加选课失败，抛出异常，消息重回队列
                 throw new BusinessException("收到支付结果，添加选课失败");
             }
+
+            // 调用讲师端余额增加
+            ChooseCourse chooseCourse = chooseCourseMapper.selectById(choosecourseId);
+            Long lecturerId = chooseCourse.getLecturerId();
+            Double price = chooseCourse.getCoursePrice();
+            LecturerBalanceDto dto = new LecturerBalanceDto();
+            dto.setPrice(price);
+            dto.setLecturerId(lecturerId);
+            contentServiceClient.updateBalance(dto);
         }
-
-
     }
 
 

@@ -1,7 +1,6 @@
 package com.dango.auth.ucenter.service;
 
 import com.dango.auth.ucenter.model.dto.AuthParamsDto;
-import com.dango.auth.ucenter.model.dto.UserExt;
 import com.dango.auth.ucenter.model.entity.User;
 
 /**

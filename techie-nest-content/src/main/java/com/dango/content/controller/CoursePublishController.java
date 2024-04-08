@@ -1,20 +1,21 @@
 package com.dango.content.controller;
 
+
 import com.alibaba.fastjson.JSON;
 import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.model.dto.HomePageDisplayDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CoursePublish;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.CoursePublishService;
+import com.dango.content.util.SecurityUtil;
 import com.dango.model.BaseResponse;
 import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -45,8 +46,8 @@ public class CoursePublishController {
     @ApiOperation("提交审核")
     public BaseResponse<Boolean> commitAudit(@PathVariable("courseId") Long courseId) {
         // 提交审核逻辑
-        Long companyId = 1234L;
-        coursePublishPreService.commitAudit(companyId, courseId);
+        Long lecturerId = SecurityUtil.getLecturerId();
+        coursePublishPreService.commitAudit(lecturerId, courseId);
         return ResultUtils.success(true);
     }
 
@@ -67,8 +68,8 @@ public class CoursePublishController {
     @ApiOperation("课程发布")
     @PostMapping("/coursepublish/{courseId}")
     public BaseResponse<Boolean> coursepublish(@PathVariable("courseId") Long courseId) {
-        Long companyId = 1234L;
-        coursePublishService.publish(companyId, courseId);
+        Long lecturerId = SecurityUtil.getLecturerId();
+        coursePublishService.publish(lecturerId, courseId);
         return ResultUtils.success(true);
     }
 
@@ -98,6 +99,20 @@ public class CoursePublishController {
         coursePreviewInfo.setCourseBase(courseBase);
         coursePreviewInfo.setTeachPlans(teachplans);
         return ResultUtils.success(coursePreviewInfo);
+    }
+
+    @ApiOperation("更新选课人数")
+    @PostMapping("/course/count/{courseId}")
+    public BaseResponse<Boolean> updateCourseStudyCount(@PathVariable(value = "courseId") Long courseId) {
+        Boolean b = coursePublishService.updateCourseStudyCount(courseId);
+        return ResultUtils.success(b);
+    }
+
+    @ApiOperation("查询主页展示数据")
+    @GetMapping("/course/index")
+    public BaseResponse<HomePageDisplayDto> display() {
+        HomePageDisplayDto dto = coursePublishService.display();
+        return ResultUtils.success(dto);
     }
 }
 

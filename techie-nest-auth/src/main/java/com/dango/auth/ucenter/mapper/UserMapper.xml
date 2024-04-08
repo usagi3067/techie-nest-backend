@@ -5,28 +5,27 @@
 <mapper namespace="com.dango.auth.ucenter.mapper.UserMapper">
 
     <resultMap id="BaseResultMap" type="com.dango.auth.ucenter.model.entity.User">
-            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="wxUnionId" column="wx_union_id" jdbcType="VARCHAR"/>
             <result property="userPic" column="user_pic" jdbcType="VARCHAR"/>
-            <result property="companyId" column="company_id" jdbcType="VARCHAR"/>
             <result property="uType" column="u_type" jdbcType="INTEGER"/>
             <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
             <result property="sex" column="sex" jdbcType="CHAR"/>
             <result property="email" column="email" jdbcType="VARCHAR"/>
             <result property="cellphone" column="cellphone" jdbcType="VARCHAR"/>
             <result property="qq" column="qq" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,username,password,
-        wx_union_id,user_pic,company_id,
-        u_type,birthday,sex,
-        email,cellphone,qq,
-        status,create_time,update_time
+        wx_union_id,user_pic,u_type,
+        birthday,sex,email,
+        cellphone,qq,status,
+        create_time,update_time
     </sql>
 </mapper>

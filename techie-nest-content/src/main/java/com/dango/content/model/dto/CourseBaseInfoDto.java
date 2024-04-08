@@ -71,8 +71,8 @@ public class CourseBaseInfoDto {
     private Integer validDays;
 
     @ApiModelProperty("大分类名称")
-    private String mtName;
+    private String mainCategoryName;
 
     @ApiModelProperty("小分类名称")
-    private String stName;
+    private String subCategoryName;
 }

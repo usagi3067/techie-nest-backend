@@ -1,15 +1,18 @@
 package com.dango.content.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dango.content.mapper.CourseBaseMapper;
 import com.dango.content.mapper.CourseMarketMapper;
 import com.dango.content.mapper.CoursePublishPreMapper;
+import com.dango.content.mapper.LecturerMapper;
 import com.dango.content.model.dto.CourseBaseInfoDto;
 import com.dango.content.model.dto.TeachPlanDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.model.entity.CourseMarket;
 import com.dango.content.model.entity.CoursePublishPre;
+import com.dango.content.model.entity.Lecturer;
 import com.dango.content.service.CourseBaseService;
 import com.dango.content.service.CoursePublishPreService;
 import com.dango.content.service.TeachPlanService;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author dango
@@ -45,20 +49,24 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
     @Resource
     private TeachPlanService teachPlanService;
 
+    @Resource
+    private LecturerMapper lecturerMapper;
+
     /**
      * 提交课程审核
      *
      * @param lecturerId 讲师id
      * @param courseId  课程ID
      */
+    @Transactional
     @Override
     public void commitAudit(Long lecturerId, Long courseId) {
 
         // 查询课程基本信息
-        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+        CourseBaseInfoDto courseBaseInfo = courseBaseService.getCourseBaseInfo(courseId);
 
         // 获取课程审核状态
-        String auditStatus = courseBase.getAuditStatus();
+        String auditStatus = courseBaseInfo.getAuditStatus();
 
         // 如果当前审核状态为已提交，则不允许再次提交
         if (CourseAuditStatus.SUBMITTED.getCode().equals(auditStatus)) {
@@ -66,12 +74,12 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         }
 
         // 只允许提交讲师自己的课程
-        if (!courseBase.getLecturerId().equals(lecturerId)) {
+        if (!courseBaseInfo.getLecturerId().equals(lecturerId)) {
             throw new BusinessException("不允许提交其它机构的课程。");
         }
 
         // 检查课程图片是否填写
-        if (StringUtils.isEmpty(courseBase.getPic())) {
+        if (StringUtils.isEmpty(courseBaseInfo.getPic())) {
             throw new BusinessException("提交失败，请上传课程图片");
         }
 
@@ -79,8 +87,11 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         CoursePublishPre coursePublishPre = new CoursePublishPre();
 
         // 获取课程基本信息以及部分营销信息
-        CourseBaseInfoDto courseBaseInfo = courseBaseService.getCourseBaseInfo(courseId);
+
         BeanUtils.copyProperties(courseBaseInfo, coursePublishPre);
+
+        // 标签序列化
+        coursePublishPre.setTags(JSON.toJSONString(courseBaseInfo.getTags()));
 
         // 获取课程营销信息
         CourseMarket courseMarket = courseMarketMapper.selectById(courseId);
@@ -104,11 +115,12 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         // 设置预发布记录状态为已提交
         coursePublishPre.setStatus(CourseAuditStatus.SUBMITTED.getCode());
 
-        // 设置教学机构id
-        coursePublishPre.setCompanyId(lecturerId);
-
-        // 设置提交时间
-        coursePublishPre.setCreateDate(LocalDateTime.now());
+        // 设置教学机构信息
+        coursePublishPre.setLecturerId(lecturerId);
+        Lecturer lecturer = lecturerMapper.selectById(lecturerId);
+        if (Objects.nonNull(lecturer)) {
+            coursePublishPre.setLecturerInfo(gson.toJson(lecturer));
+        }
 
         CoursePublishPre coursePublishPreUpdate = baseMapper.selectById(courseId);
 
@@ -120,6 +132,7 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         }
 
         // 更新课程基本表的审核状态
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
         courseBase.setAuditStatus(CourseAuditStatus.SUBMITTED.getCode());
         courseBaseMapper.updateById(courseBase);
     }
@@ -140,7 +153,6 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         courseBaseMapper.updateById(courseBase);
 
         CoursePublishPre coursePublishPre = baseMapper.selectById(courseId);
-        coursePublishPre.setAuditDate(LocalDateTime.now());
         coursePublishPre.setStatus(CourseAuditStatus.APPROVED.getCode());
         baseMapper.updateById(coursePublishPre);
     }
@@ -161,7 +173,6 @@ public class CoursePublishPreServiceImpl extends ServiceImpl<CoursePublishPreMap
         courseBaseMapper.updateById(courseBase);
 
         CoursePublishPre coursePublishPre = baseMapper.selectById(courseId);
-        coursePublishPre.setAuditDate(LocalDateTime.now());
         coursePublishPre.setStatus(CourseAuditStatus.REJECTED.getCode());
         baseMapper.updateById(coursePublishPre);
 

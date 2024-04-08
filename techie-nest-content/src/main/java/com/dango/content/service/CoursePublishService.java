@@ -2,6 +2,7 @@ package com.dango.content.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dango.content.model.dto.CoursePreviewDto;
+import com.dango.content.model.dto.HomePageDisplayDto;
 import com.dango.content.model.entity.CoursePublish;
 
 import java.io.File;
@@ -25,12 +26,12 @@ public interface CoursePublishService extends IService<CoursePublish> {
     /**
      * 发布课程
      *
-     * @param companyId 公司ID
+     * @param lecturerId 公司ID
      * @param courseId  课程ID
      * @author dango
      * @date 2024-03-19
      */
-    void publish(Long companyId, Long courseId);
+    void publish(Long lecturerId, Long courseId);
 
     /**
      * 获取课程预览信息
@@ -56,4 +57,8 @@ public interface CoursePublishService extends IService<CoursePublish> {
     public void  uploadCourseHtml(Long courseId, File file);
 
     CoursePublish getCoursePublish(Long courseId);
+
+    Boolean updateCourseStudyCount(Long count);
+
+    HomePageDisplayDto display();
 }

@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 
@@ -38,19 +37,19 @@ public class ChooseCourse implements Serializable {
      * 用户id
      */
     @TableField(value = "user_id")
-    private String userId;
+    private Long userId;
 
     /**
-     * 机构id
+     * 讲师id
      */
-    @TableField(value = "company_id")
-    private Long companyId;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
 
     /**
-     * 选课类型
+     * 1:免费 0： 收费
      */
-    @TableField(value = "order_type")
-    private String orderType;
+    @TableField(value = "is_free")
+    private Integer isFree;
 
     /**
      * 课程图片
@@ -59,10 +58,16 @@ public class ChooseCourse implements Serializable {
     private String pic;
 
     /**
-     * 添加时间
+     * 创建时间
      */
-    @TableField(value = "create_date")
-    private LocalDateTime createDate;
+    @TableField(value = "date_created")
+    private LocalDateTime dateCreated;
+
+    /**
+     * 更新时间
+     */
+    @TableField(value = "date_updated")
+    private LocalDateTime dateUpdated;
 
     /**
      * 课程价格
@@ -77,7 +82,7 @@ public class ChooseCourse implements Serializable {
     private Integer validDays;
 
     /**
-     * 选课状态
+     * 选课状态 400001:选课成功 400002:待支付 400003  
      */
     @TableField(value = "status")
     private String status;

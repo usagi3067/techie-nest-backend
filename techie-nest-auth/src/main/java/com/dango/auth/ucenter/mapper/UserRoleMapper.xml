@@ -5,9 +5,9 @@
 <mapper namespace="com.dango.auth.ucenter.mapper.UserRoleMapper">
 
     <resultMap id="BaseResultMap" type="com.dango.auth.ucenter.model.entity.UserRole">
-            <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
-            <result property="roleId" column="role_id" jdbcType="VARCHAR"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="roleId" column="role_id" jdbcType="BIGINT"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="creator" column="creator" jdbcType="VARCHAR"/>
     </resultMap>

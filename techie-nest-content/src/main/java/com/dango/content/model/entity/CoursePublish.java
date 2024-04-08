@@ -1,13 +1,12 @@
 package com.dango.content.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 课程发布
@@ -23,76 +22,52 @@ public class CoursePublish implements Serializable {
     private Long id;
 
     /**
-     * 机构ID
-     */
-    @TableField(value = "company_id")
-    private Long companyId;
-
-    /**
-     * 公司名称
-     */
-    @TableField(value = "company_name")
-    private String companyName;
-
-    /**
      * 课程名称
      */
     @TableField(value = "name")
     private String name;
 
     /**
-     * 适用人群
-     */
-    @TableField(value = "users")
-    private String users;
-
-    /**
-     * 标签
+     * 标签(json格式)
      */
     @TableField(value = "tags")
     private String tags;
 
     /**
-     * 创建人
+     * 讲师ID
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
+
+    /**
+     * 讲师名称
+     */
+    @TableField(value = "lecturer_name")
+    private String lecturerName;
 
     /**
      * 大分类
      */
-    @TableField(value = "mt")
-    private String mt;
+    @TableField(value = "main_category")
+    private String mainCategory;
 
     /**
-     * 大分类名称
+     * 主分类名称
      */
-    @TableField(value = "mt_name")
-    private String mtName;
+    @TableField(value = "main_category_name")
+    private String mainCategoryName;
 
     /**
-     * 小分类
+     * 次分类
      */
-    @TableField(value = "st")
-    private String st;
+    @TableField(value = "sub_category")
+    private String subCategory;
 
     /**
-     * 小分类名称
+     * 次分类名称
      */
-    @TableField(value = "st_name")
-    private String stName;
-
-    /**
-     * 课程等级
-     */
-    @TableField(value = "grade")
-    private String grade;
-
-    /**
-     * 教育模式
-     */
-    @TableField(value = "teach_mode")
-    private String teachMode;
+    @TableField(value = "sub_category_name")
+    private String subCategoryName;
 
     /**
      * 课程图片
@@ -107,6 +82,12 @@ public class CoursePublish implements Serializable {
     private String description;
 
     /**
+     * 预备知识
+     */
+    @TableField(value = "pre_knowledge")
+    private String preKnowledge;
+
+    /**
      * 课程营销信息，json格式
      */
     @TableField(value = "market")
@@ -119,34 +100,25 @@ public class CoursePublish implements Serializable {
     private String teachPlan;
 
     /**
-     * 教师信息，json格式
+     * 讲师简介， json格式
      */
-    @TableField(value = "teachers")
-    private String teachers;
+    @TableField(value = "lecturer_info")
+    private String lecturerInfo;
 
     /**
      * 发布时间
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(value = "create_date")
-    private LocalDateTime createDate;
-
-    /**
-     * 上架时间
-     */
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(value = "online_date")
-    private LocalDateTime onlineDate;
+    @TableField(value = "publish_date")
+    private LocalDateTime publishDate;
 
     /**
      * 下架时间
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "offline_date")
     private LocalDateTime offlineDate;
 
     /**
-     * 发布状态
+     * 发布状态(20001:未发布, 20002:已发布, 20003:下线)
      */
     @TableField(value = "status")
     private String status;
@@ -158,10 +130,10 @@ public class CoursePublish implements Serializable {
     private String remark;
 
     /**
-     * 收费规则，对应数据字典--203
+     * 是否免费(1: 免费, 0: 收费)
      */
-    @TableField(value = "charge")
-    private String charge;
+    @TableField(value = "is_free")
+    private Integer isFree;
 
     /**
      * 现价
@@ -180,6 +152,18 @@ public class CoursePublish implements Serializable {
      */
     @TableField(value = "valid_days")
     private Integer validDays;
+
+    /**
+     * 购买人数
+     */
+    @TableField(value = "count_buy")
+    private Integer countBuy;
+
+    /**
+     * 学习人数
+     */
+    @TableField(value = "count_study")
+    private Integer countStudy;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

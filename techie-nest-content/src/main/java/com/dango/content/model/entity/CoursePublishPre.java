@@ -1,15 +1,15 @@
 package com.dango.content.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
- * 课程发布
+ * 课程预发布表
  * @TableName course_publish_pre
  */
 @TableName(value ="course_publish_pre")
@@ -22,76 +22,52 @@ public class CoursePublishPre implements Serializable {
     private Long id;
 
     /**
-     * 机构ID
-     */
-    @TableField(value = "company_id")
-    private Long companyId;
-
-    /**
-     * 公司名称
-     */
-    @TableField(value = "company_name")
-    private String companyName;
-
-    /**
      * 课程名称
      */
     @TableField(value = "name")
     private String name;
 
     /**
-     * 适用人群
-     */
-    @TableField(value = "users")
-    private String users;
-
-    /**
-     * 标签
+     * 标签(json格式)
      */
     @TableField(value = "tags")
     private String tags;
 
     /**
-     * 创建人
+     * 讲师ID
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "lecturer_id")
+    private Long lecturerId;
 
     /**
-     * 大分类
+     * 讲师名称
      */
-    @TableField(value = "mt")
-    private String mt;
+    @TableField(value = "lecturer_name")
+    private String lecturerName;
 
     /**
-     * 大分类名称
+     * 主分类
      */
-    @TableField(value = "mt_name")
-    private String mtName;
+    @TableField(value = "main_category")
+    private String mainCategory;
 
     /**
-     * 小分类
+     * 主分类名称
      */
-    @TableField(value = "st")
-    private String st;
+    @TableField(value = "main_category_name")
+    private String mainCategoryName;
 
     /**
-     * 小分类名称
+     * 次分类
      */
-    @TableField(value = "st_name")
-    private String stName;
+    @TableField(value = "sub_category")
+    private String subCategory;
 
     /**
-     * 课程等级
+     * 次分类名称
      */
-    @TableField(value = "grade")
-    private String grade;
-
-    /**
-     * 教育模式
-     */
-    @TableField(value = "teach_mode")
-    private String teachMode;
+    @TableField(value = "sub_category_name")
+    private String subCategoryName;
 
     /**
      * 课程图片
@@ -106,6 +82,12 @@ public class CoursePublishPre implements Serializable {
     private String description;
 
     /**
+     * 预备知识
+     */
+    @TableField(value = "pre_knowledge")
+    private String preKnowledge;
+
+    /**
      * 课程营销信息，json格式
      */
     @TableField(value = "market")
@@ -118,40 +100,28 @@ public class CoursePublishPre implements Serializable {
     private String teachPlan;
 
     /**
-     * 教师信息，json格式
+     * 讲师姐骚，json格式
      */
-    @TableField(value = "teachers")
-    private String teachers;
+    @TableField(value = "lecturer_info")
+    private String lecturerInfo;
 
     /**
-     * 提交时间
+     * 创建时间
      */
-    @TableField(value = "create_date")
-    private LocalDateTime createDate;
+    @TableField(value = "date_created")
+    private LocalDateTime dateCreated;
 
     /**
-     * 审核时间
+     * 更新时间
      */
-    @TableField(value = "audit_date")
-    private LocalDateTime auditDate;
+    @TableField(value = "date_updated")
+    private LocalDateTime dateUpdated;
 
     /**
-     * 状态
+     * 是否免费(1: 免费, 0: 收费)
      */
-    @TableField(value = "status")
-    private String status;
-
-    /**
-     * 备注
-     */
-    @TableField(value = "remark")
-    private String remark;
-
-    /**
-     * 收费规则，对应数据字典--203
-     */
-    @TableField(value = "charge")
-    private String charge;
+    @TableField(value = "is_free")
+    private Integer isFree;
 
     /**
      * 现价
@@ -164,6 +134,12 @@ public class CoursePublishPre implements Serializable {
      */
     @TableField(value = "original_price")
     private Double originalPrice;
+
+    /**
+     * 审核状态（10001:审核未通过 10002审核通过 10003已提交 10004未提交）
+     */
+    @TableField(value = "status")
+    private String status;
 
     /**
      * 课程有效期天数

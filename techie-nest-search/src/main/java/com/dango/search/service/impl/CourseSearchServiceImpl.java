@@ -49,6 +49,32 @@ public class CourseSearchServiceImpl implements CourseSearchService {
     @Autowired
     RestHighLevelClient client;
 
+    /**
+     * 设置搜索请求
+     * 指定索引：通过SearchRequest对象指定要查询的Elasticsearch索引。
+     * 构建查询：使用SearchSourceBuilder和BoolQueryBuilder构建复杂的布尔查询。
+     * 字段过滤：指定哪些字段应该被包含在响应中。
+     * 构建查询条件
+     * 关键字搜索：如果提供了关键字，则使用MultiMatchQueryBuilder在多个字段上进行搜索，可以提升特定字段的权重。
+     * 过滤条件：根据提供的参数（如类别、子类别等）添加过滤条件。
+     * 分页
+     * 计算起始点并设置分页参数，以控制返回结果的数量和分页。
+     * 聚合
+     * 使用buildAggregation方法添加聚合操作，用于生成分组统计数据，例如，按主类别和子类别进行聚合。
+     * 执行搜索
+     * 使用Elasticsearch客户端发送搜索请求并获取响应。
+     * 处理搜索结果
+     * 解析搜索命中的结果，将原始JSON转换为Java对象列表。
+     * 提取并处理总命中数，用于分页。
+     * 添加课程索引到结果列表。
+     * 处理聚合结果
+     * 从响应中获取聚合数据，提供对主类别和子类别的分组统计概览。
+     * 返回搜索结果
+     * 封装搜索结果（包括课程列表、总数、分页信息和聚合数据）到SearchPageResultDto对象，并返回。
+     * @param pageParams 分页参数
+     * @param courseSearchParam 搜索条件
+     * @return
+     */
     @Override
     public SearchPageResultDto<CourseIndex> queryCoursePubIndex(PageParams pageParams, SearchCourseParamDto courseSearchParam) {
 
@@ -75,10 +101,10 @@ public class CourseSearchServiceImpl implements CourseSearchService {
         }
         //过虑
         if(StringUtils.isNotEmpty(courseSearchParam.getMt())){
-            boolQueryBuilder.filter(QueryBuilders.termQuery("mtName",courseSearchParam.getMt()));
+            boolQueryBuilder.filter(QueryBuilders.termQuery("mainCategory",courseSearchParam.getMt()));
         }
         if(StringUtils.isNotEmpty(courseSearchParam.getSt())){
-            boolQueryBuilder.filter(QueryBuilders.termQuery("stName",courseSearchParam.getSt()));
+            boolQueryBuilder.filter(QueryBuilders.termQuery("subCategory",courseSearchParam.getSt()));
         }
         if(StringUtils.isNotEmpty(courseSearchParam.getGrade())){
             boolQueryBuilder.filter(QueryBuilders.termQuery("grade",courseSearchParam.getGrade()));
@@ -131,7 +157,7 @@ public class CourseSearchServiceImpl implements CourseSearchService {
 //            //课程id
 //            Long id = courseIndex.getId();
 //            //取出名称
-//            String name = courseIndex.getName();
+//            String     name = courseIndex.getName();
 //            //取出高亮字段内容
 //            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
 //            if(highlightFields!=null){
@@ -168,12 +194,12 @@ public class CourseSearchServiceImpl implements CourseSearchService {
     private void buildAggregation(SearchRequest request) {
         request.source().aggregation(AggregationBuilders
                 .terms("mtAgg")
-                .field("mtName")
+                .field("mainCategoryName")
                 .size(100)
         );
         request.source().aggregation(AggregationBuilders
                 .terms("stAgg")
-                .field("stName")
+                .field("subCategoryName")
                 .size(100)
         );
 

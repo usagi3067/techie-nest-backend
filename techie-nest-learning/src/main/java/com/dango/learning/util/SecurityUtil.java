@@ -1,6 +1,9 @@
 package com.dango.learning.util;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.dango.exception.BusinessException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,39 +37,75 @@ public class SecurityUtil {
         return null;
     }
 
+    public static Long getLecturerId() {
+        //当前登录用户
+        User user = SecurityUtil.getUser();
+        if (user == null) {
+            throw new BusinessException("用户未登录");
+        }
+        if (user.getUType() != 2 && user.getUType() != 3) {
+            throw new BusinessException("用户无权限");
+        }
+        return user.getId();
+    }
 
     @Data
     public static class User implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private String id;
+        /**
+         *
+         */
+        @TableId(value = "id")
+        private Long id;
 
+        /**
+         *
+         */
+        @TableField(value = "username")
         private String username;
 
-        private String password;
 
-        private String salt;
+        /**
+         * 微信unionid
+         */
+        private String wxUnionId;
 
-        private String name;
-        private String nickname;
-        private String wxUnionid;
-        private String companyId;
         /**
          * 头像
          */
-        private String userpic;
+        private String userPic;
 
-        private String utype;
+        /**
+         * 1为学生， 2为老师， 3为管理员
+         */
+        @TableField(value = "u_type")
+        private Integer uType;
 
+        /**
+         *
+         */
         private LocalDateTime birthday;
 
+        /**
+         *
+         */
         private String sex;
 
+        /**
+         *
+         */
         private String email;
 
+        /**
+         *
+         */
         private String cellphone;
 
+        /**
+         *
+         */
         private String qq;
 
         /**
@@ -74,8 +113,12 @@ public class SecurityUtil {
          */
         private String status;
 
+
         private LocalDateTime createTime;
 
+        /**
+         *
+         */
         private LocalDateTime updateTime;
 
 

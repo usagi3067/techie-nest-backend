@@ -1,5 +1,6 @@
 package com.dango.auth.ucenter.service.impl;
 
+import com.dango.auth.config.SimpleIdGenerator;
 import com.dango.auth.ucenter.mapper.UserMapper;
 import com.dango.auth.ucenter.mapper.UserRoleMapper;
 import com.dango.auth.ucenter.model.dto.RegisterDto;
@@ -33,8 +34,7 @@ public class VerifyServiceImpl implements VerifyService {
     @Override
     @Transactional
     public void register(RegisterDto registerDto) {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        String shortUuid = uuid.substring(0, 16); // 取前16位
+        long id = SimpleIdGenerator.assignId();
         String password = registerDto.getPassword();
         String confirmpwd = registerDto.getConfirmpwd();
         if (!password.equals(confirmpwd)) {
@@ -42,19 +42,18 @@ public class VerifyServiceImpl implements VerifyService {
         }
         User user = new User();
         BeanUtils.copyProperties(registerDto, user);
-        user.setId(shortUuid);
+        user.setId(id);
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setUType(2);  // 学生类型
-        user.setStatus("1");
+        user.setStatus(1);
         user.setCreateTime(LocalDateTime.now());
         int insert = userMapper.insert(user);
         if (insert <= 0) {
             throw new BusinessException("新增用户信息失败");
         }
         UserRole userRole = new UserRole();
-        userRole.setId(shortUuid);
-        userRole.setUserId(shortUuid);
-        userRole.setRoleId("50");
+        userRole.setUserId(id);
+        userRole.setRoleId(51L);
         userRole.setCreateTime(LocalDateTime.now());
         int insert1 = userRoleMapper.insert(userRole);
         if (insert1 <= 0) {

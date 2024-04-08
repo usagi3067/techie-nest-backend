@@ -1,0 +1,2 @@
+### 搜索
+GET {{search_host}}/course/list?grade=&keywords=入门&mt=&pageNo=1&pageSize=10&sortField=&sortOrder=&st=

@@ -2,11 +2,8 @@ package com.dango.auth.ucenter.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dango.auth.ucenter.mapper.MenuMapper;
 import com.dango.auth.ucenter.mapper.UserMapper;
 import com.dango.auth.ucenter.model.dto.AuthParamsDto;
-import com.dango.auth.ucenter.model.dto.UserExt;
-import com.dango.auth.ucenter.model.entity.Menu;
 import com.dango.auth.ucenter.model.entity.User;
 import com.dango.auth.ucenter.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author dango
@@ -72,11 +67,19 @@ public class UserServiceImpl implements UserDetailsService {
 
         //为了安全在令牌中不放密码
         user.setPassword(null);
+        String role;
+        if (user.getUType() == 1) {
+            role = "STUDENT";
+        } else if (user.getUType() == 2) {
+            role = "LECTURER";
+        } else {
+            role = "ADMIN";
+        }
         //将user对象转json
         String userString = JSON.toJSONString(user);
         //创建UserDetails对象
         return org.springframework.security.core.userdetails.User
-                .builder().username(userString).password(password).roles("INSTRUCTOR").build();
+                .builder().username(userString).password(password).roles(role).build();
     }
 
 }

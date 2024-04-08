@@ -2,6 +2,7 @@ package com.dango.media.controller;
 
 import com.dango.media.model.dto.UploadFileParamsDto;
 import com.dango.media.service.MediaFilesService;
+import com.dango.media.util.SecurityUtil;
 import com.dango.model.BaseResponse;
 import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
@@ -88,13 +89,13 @@ public class BigFilesController {
     @ApiOperation(value = "合并文件分块")
     @PostMapping("/upload/merge-chunks")
     public BaseResponse<Boolean> mergeChunks(@RequestParam("fileMd5") String fileMd5, @RequestParam("fileName") String fileName, @RequestParam("chunkTotal") int chunkTotal) throws Exception {
-        long companyId = 1234L;
+        Long lecturerId = SecurityUtil.getLecturerId();
         //文件信息对象
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
         uploadFileParamsDto.setFilename(fileName);
         uploadFileParamsDto.setTags("视频文件");
         uploadFileParamsDto.setFileType("001002");
-        Boolean b = mediaFilesService.mergechunks(companyId, fileMd5, chunkTotal, uploadFileParamsDto);
+        Boolean b = mediaFilesService.mergechunks(lecturerId, fileMd5, chunkTotal, uploadFileParamsDto);
         return ResultUtils.success(b);
     }
 }

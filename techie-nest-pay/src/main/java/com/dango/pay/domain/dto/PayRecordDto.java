@@ -1,6 +1,6 @@
 package com.dango.pay.domain.dto;
 
-import com.dango.pay.domain.entity.XcPayRecord;
+import com.dango.pay.domain.entity.PayRecord;
 import lombok.Data;
 import lombok.ToString;
 
@@ -11,7 +11,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class PayRecordDto extends XcPayRecord {
+public class PayRecordDto extends PayRecord {
 
     //二维码
     private String qrcode;

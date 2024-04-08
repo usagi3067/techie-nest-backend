@@ -19,11 +19,11 @@ public class UploadFileResultDto implements Serializable {
     @ApiModelProperty(value = "文件id,md5值")
     private String id;
 
-    @ApiModelProperty(value = "机构ID")
-    private Long companyId;
+    @ApiModelProperty(value = "讲师ID")
+    private Long lecturerId;
 
-        @ApiModelProperty(value = "机构名称")
-    private String companyName;
+        @ApiModelProperty(value = "讲师名称")
+    private String lecturerName;
 
         @ApiModelProperty(value = "文件名称")
     private String filename;

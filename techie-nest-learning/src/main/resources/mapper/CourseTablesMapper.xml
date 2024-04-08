@@ -5,25 +5,23 @@
 <mapper namespace="com.dango.learning.mapper.CourseTablesMapper">
 
     <resultMap id="BaseResultMap" type="com.dango.learning.model.entity.CourseTables">
-        <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="chooseCourseId" column="choose_course_id" jdbcType="BIGINT"/>
-        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
-        <result property="courseId" column="course_id" jdbcType="BIGINT"/>
-        <result property="companyId" column="company_id" jdbcType="BIGINT"/>
-        <result property="courseName" column="course_name" jdbcType="VARCHAR"/>
-        <result property="courseType" column="course_type" jdbcType="VARCHAR"/>
-        <result property="pic" column="pic" jdbcType="VARCHAR"/>
-        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
-        <result property="validTimeStart" column="valid_time_start" jdbcType="TIMESTAMP"/>
-        <result property="validTimeEnd" column="valid_time_end" jdbcType="TIMESTAMP"/>
-        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
-        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="chooseCourseId" column="choose_course_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="courseId" column="course_id" jdbcType="BIGINT"/>
+            <result property="lecturerId" column="lecturer_id" jdbcType="BIGINT"/>
+            <result property="courseName" column="course_name" jdbcType="VARCHAR"/>
+            <result property="isFree" column="is_free" jdbcType="TINYINT"/>
+            <result property="pic" column="pic" jdbcType="VARCHAR"/>
+            <result property="validTimeStart" column="valid_time_start" jdbcType="TIMESTAMP"/>
+            <result property="validTimeEnd" column="valid_time_end" jdbcType="TIMESTAMP"/>
+            <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,choose_course_id,user_id,
-        course_id,company_id,course_name,pic,
-        course_type,create_date,valid_time_start,
-        valid_time_end,update_date,remarks
+        course_id,lecturer_id,course_name,
+        is_free,pic,valid_time_start,
+        valid_time_end,remarks
     </sql>
 </mapper>

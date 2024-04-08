@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dango.pay.mapper.OrdersGoodsMapper">
+
+    <resultMap id="BaseResultMap" type="com.dango.pay.domain.entity.OrdersGoods">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="goodsId" column="goods_id" jdbcType="VARCHAR"/>
+            <result property="goodsType" column="goods_type" jdbcType="VARCHAR"/>
+            <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+            <result property="goodsPrice" column="goods_price" jdbcType="FLOAT"/>
+            <result property="goodsDetail" column="goods_detail" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,goods_id,
+        goods_type,goods_name,goods_price,
+        goods_detail
+    </sql>
+</mapper>

@@ -5,13 +5,13 @@ import com.dango.media.model.dto.UploadFileParamsDto;
 import com.dango.media.model.dto.UploadFileResultDto;
 import com.dango.media.model.entity.MediaFiles;
 import com.dango.media.service.MediaFilesService;
+import com.dango.media.util.SecurityUtil;
 import com.dango.model.BaseResponse;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
 import com.dango.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,17 +34,17 @@ public class MediaFileController {
     @ApiOperation("媒资列表查询接口")
     @PostMapping("/files")
     public BaseResponse<PageResult<MediaFiles>> list(PageParams pageParams, @RequestBody QueryMediaParamsDto queryMediaParamsDto){
-        Long companyId = 1234L;
-        PageResult<MediaFiles> mediaFilesPageResult = mediaFileService.queryMediaFiles(companyId, pageParams, queryMediaParamsDto);
+        Long lecturerId = SecurityUtil.getLecturerId();
+        PageResult<MediaFiles> mediaFilesPageResult = mediaFileService.queryMediaFiles(lecturerId, pageParams, queryMediaParamsDto);
         return ResultUtils.success(mediaFilesPageResult);
     }
 
     @ApiOperation("上传文件")
-    @RequestMapping(value = "/upload/course-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<UploadFileResultDto> upload(@RequestPart("file-data") MultipartFile upload,
+    @RequestMapping(value = "/upload/course-file")
+        public BaseResponse<UploadFileResultDto> upload(@RequestPart("file-data") MultipartFile upload,
                                       @RequestParam(value = "folder", required = false) String folder,
                                       @RequestParam(value = "objectName", required = false) String objectName) throws IOException {
-        Long companyId = 1234L;
+        Long lecturerId = SecurityUtil.getLecturerId();
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
         //文件大小
         uploadFileParamsDto.setFileSize(upload.getSize());
@@ -62,7 +62,7 @@ public class MediaFileController {
         //文件路径
         String absolutePath = tempFile.getAbsolutePath();
         //上传文件
-        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, absolutePath, objectName);
+        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(lecturerId, uploadFileParamsDto, absolutePath, objectName);
         return ResultUtils.success(uploadFileResultDto);
     }
 

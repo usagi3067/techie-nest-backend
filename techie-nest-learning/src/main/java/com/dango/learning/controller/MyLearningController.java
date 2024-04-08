@@ -31,12 +31,7 @@ public class MyLearningController {
     @GetMapping("/open/learn/getvideo/{courseId}/{teachPlanId}/{mediaId}")
     public BaseResponse<String> getvideo(@PathVariable("courseId") Long courseId, @PathVariable("teachPlanId") Long teachPlanId, @PathVariable("mediaId") String mediaId) {
         SecurityUtil.User user = SecurityUtil.getUser();
-        String userId;
-        if (user == null) {
-            userId = "50";
-        } else {
-            userId = user.getId();
-        }
+        Long userId = user.getId();
         //获取视频
         String res = learningService.getVideo(userId, courseId, teachPlanId, mediaId);
 

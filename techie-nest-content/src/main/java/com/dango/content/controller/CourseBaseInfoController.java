@@ -7,6 +7,7 @@ import com.dango.content.model.dto.QueryCoursePageDto;
 import com.dango.content.model.entity.CourseBase;
 import com.dango.content.service.CourseBaseService;
 import com.dango.content.util.SecurityUtil;
+import com.dango.exception.BusinessException;
 import com.dango.model.BaseResponse;
 import com.dango.model.PageParams;
 import com.dango.model.PageResult;
@@ -19,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+
+import static com.dango.content.util.SecurityUtil.getLecturerId;
 
 /**
  * œ
@@ -38,25 +41,17 @@ public class CourseBaseInfoController {
     @ApiOperation("课程查询接口")
     @PostMapping("/course/list")
     public BaseResponse<PageResult<CourseBase>> list(PageParams pageParams, @RequestBody(required = false) QueryCoursePageDto req) {
-        //当前登录用户
-        SecurityUtil.User user = SecurityUtil.getUser();
-        //用户所属机构id
-        Long companyId = null;
-
-        if (user != null && StringUtils.isNotEmpty(user.getCompanyId())) {
-            companyId = Long.parseLong(user.getCompanyId());
-        } else {
-            companyId = 1234L;
-        }
-        PageResult<CourseBase> pageResult = courseBaseService.queryCoursePageList(companyId, pageParams, req);
+        Long lecturerId = getLecturerId();
+        PageResult<CourseBase> pageResult = courseBaseService.queryCoursePageList(lecturerId, pageParams, req);
         return ResultUtils.success(pageResult);
     }
+
 
     @ApiOperation("课程新增接口")
     @PostMapping("/course")
     public BaseResponse<CourseBaseInfoDto> addCourseBase(@RequestBody @Validated AddCourseDto addCourseDto) {
-        Long companyId = 1234L;
-        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.addCourseBase(companyId, addCourseDto);
+        Long lecturerId = getLecturerId();
+        CourseBaseInfoDto courseBaseInfoDto = courseBaseService.addCourseBase(lecturerId, addCourseDto);
         return ResultUtils.success(courseBaseInfoDto);
     }
 
@@ -72,7 +67,7 @@ public class CourseBaseInfoController {
     @ApiOperation("修改课程基本信息")
     @PutMapping("/course")
     public BaseResponse<CourseBaseInfoDto> updateCourseBase(@RequestBody @Validated EditCourseDto editCourseDto) {
-        Long lecturerId = 1234L;
+        Long lecturerId = getLecturerId();
         CourseBaseInfoDto courseBaseInfoDto = courseBaseService.updateCourseBase(lecturerId, editCourseDto);
         return ResultUtils.success(courseBaseInfoDto);
     }
@@ -80,19 +75,13 @@ public class CourseBaseInfoController {
     @ApiOperation("删除课程")
     @DeleteMapping("/course/{courseId}")
     public BaseResponse<Boolean> deleteCourse(@PathVariable Long courseId) {
-        //当前登录用户
-        SecurityUtil.User user = SecurityUtil.getUser();
-        //用户所属机构id
-        Long companyId = null;
-        if (StringUtils.isNotEmpty(user.getCompanyId())) {
-            companyId = Long.parseLong(user.getCompanyId());
-        } else {
-            companyId = 1234L;
-        }
+        Long lecturerId = getLecturerId();
 
-        Boolean b = courseBaseService.deleteCourse(companyId, courseId);
+        Boolean b = courseBaseService.deleteCourse(lecturerId, courseId);
         return ResultUtils.success(b);
     }
+
+
 }
 
 

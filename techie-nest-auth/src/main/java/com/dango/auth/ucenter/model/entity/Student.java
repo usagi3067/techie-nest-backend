@@ -21,12 +21,6 @@ public class Student implements Serializable {
     private String id;
 
     /**
-     * 用户id
-     */
-    @TableField(value = "user_id")
-    private String userId;
-
-    /**
      * 爱好
      */
     @TableField(value = "hobby")
